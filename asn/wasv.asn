@@ -1,0 +1,31 @@
+#file .\asn\dbms.asn
+
+[SETTINGS]
+$putmess_logfile      = .\log\wasv_%p.log
+$search_resources     = resources_only
+$js_base_url          = ../dspjs
+$test_mode_components
+
+
+[RESOURCES]
+.\resources
+usys:usys.uar
+
+
+[FILES]
+*.log                 .\log\*.log
+
+[LOGICALS]
+BASE_URL              = ../
+STATE_MODULE          = TOMCAT
+
+
+[WEB]
+; The following assignment setting is used to calculate the hash-values to protect non-editable fields.
+$server_secret = hCRivhboXoFHjdfZevndGlbpnXScWKame2dFfBnkIJesFAA7tCUntLCrtILMqgZc
+
+; The following assignment setting is used to specify the location of DSP JavaScript
+;$js_base_url = ../dspjs
+
+; The following assignment setting is used to specify the location of base URL for JavaScript and CSS resources for DSPs
+;$uniface_runtime_base_url = ../common

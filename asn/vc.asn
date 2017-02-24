@@ -1,0 +1,47 @@
+;Version Control Sync Tool Default Configuration - please modify and include in your .asn
+[LOGICALS]
+;The root folder to export source files to (relative to working directory)
+SOURCE_DIR              src
+;Run sync automatically when opening tool (Project menu option)
+AUTO_SYNC               1
+;Include signatures in the component export files
+INCLUDE_COMPONENT_SIGS  0
+;Force synchronization of all objects
+;When enabled a number of performance optimisations are disabled
+FULL_SYNC_DEFAULT       1
+;Include library definition in library object exports
+INCLUDE_LIB             0
+;Enable exporting of signatures that only have a Uniface implementation
+EXPORT_UF_SIG           0
+
+;Source Export Paths - relative to SOURCE_DIR above
+FORM_PATH            components\frm\<object>.cmx
+USP_PATH             components\usp\<object>.cmx
+DSP_PATH             components\dsp\<object>.cmx
+REPORT_PATH          components\rpt\<object>.cmx
+SVC_PATH             components\svc\<object>.cmx
+SESSION_SVC_PATH     components\ssv\<object>.cmx
+ENT_SVC_PATH         components\esv\<object>.cmx
+
+MODEL_PATH           models\<object>.amx
+SIGNATURE_PATH       signatures\<object>.sgx
+STARTUP_SHELL_PATH   startupshells\<object>.shx
+
+CONSTANT_PATH        library\constants\<lib>.cnx
+DEVICE_PATH          library\device table\<lib>\<object>.ktx
+FORMAT_PATH          library\format\<lib>\<object>.fmx
+GLOBAL_PROC_PATH     library\proc\<lib>\<object>.prx
+GLYPH_PATH           library\glyph\<lib>\<lang>\<object>.glx
+INCLUDE_PATH         library\include\<lib>\<object>.ipx
+LIBRARY_DEF_PATH     library\<object>.lbx
+MENU_PATH            library\menu\<lib>\<lang>\<object>.mnx
+MESSAGE_PATH         library\message\<lib>\<lang>\<object>.msx
+PANEL_PATH           library\panel\<lib>\<object>.pnx
+TRANSLATION_PATH     library\translation table\<lib>\<object>.dtx
+VARIABLES_PATH       library\variables\<lib>\<object>.vrx
+
+ENT_INTERFACE_PATH   templates\entity\interface\<object>.eix
+FIELD_TEMPLATE_PATH  templates\field\template\<object>.ftx
+FLD_INTERFACE_PATH   templates\field\interface\<object>.fix
+FLD_LAYOUT_PATH      templates\field\layout\<object>.flx
+FLD_SYNTAX_PATH      templates\field\syntax\<object>.fsx

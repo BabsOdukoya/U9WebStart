@@ -1,0 +1,26 @@
+[SETTINGS]
+$enhanced_edit        all
+$search_resources     resources_only
+$resources_output     .\resources
+$nls_internal_time    UTC
+
+
+[RESOURCES]
+.\resources
+
+usys:uidf.uar
+usys:usys.uar
+usys:usysicon.uar
+usys:udbg.uar
+
+
+[FILES]
+usys:*.xml  usysuniface:.\misc\*.xml
+
+*.log       .\log\*.log
+*.*lst      .\lst\*.*lst
+
+*.dtd       .\dtd\*.dtd
+
+
+#file .\asn\dbms.asn
