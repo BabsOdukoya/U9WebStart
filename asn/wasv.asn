@@ -3,7 +3,6 @@
 [SETTINGS]
 $putmess_logfile      = .\log\wasv_%p.log
 $search_resources     = resources_only
-$js_base_url          = ../dspjs
 $test_mode_components
 
 
@@ -28,4 +27,4 @@ $server_secret = hCRivhboXoFHjdfZevndGlbpnXScWKame2dFfBnkIJesFAA7tCUntLCrtILMqgZ
 ;$js_base_url = ../dspjs
 
 ; The following assignment setting is used to specify the location of base URL for JavaScript and CSS resources for DSPs
-;$uniface_runtime_base_url = ../common
+$uniface_runtime_base_url = ../common

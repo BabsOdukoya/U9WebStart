@@ -30,7 +30,7 @@
 		version control. For example, a log folder.
 	-->
 	<folders>
-		<folder name=".\adm" />
+		<folder name=".\asn" />
 		<folder name=".\resources" />
 		<folder name=".\log" />
 		<folder name=".\lst" />
