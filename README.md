@@ -2,15 +2,15 @@
 ##Starter Web DSP Project
 
 ###Overview
-A sample web application starter project consisting of main container page (BOOTMAIN) and components for login (BOOTLOGIN), alerts (BOOTALERT), simple navigation (BOOTNAV) and a sample page (BOOTPAGE). More features will be added for upcoming lectures.
+A sample web application starter project consisting of main container page (BOOTMAIN) and components for login (BOOTLOGIN), alerts (BOOTALERT), simple navigation (BOOTNAV) and a sample page (BOOTPAGE). Subsequent additions include Bootstrap CSS based tabs (BOOTTABS) and modality support (BOOTMODAL loaded into container in BOOTMAIN, which provides methods to show other DSP's modally).
 
 ####Background
-It was built for the Uniface Lecture Webinar: Building Responsive Applications, and aims to provide a starting point for application architecture. It provides a simpler implementation than the WebFramework project, which contains some features you may not require (e.g. routing tables & html 5 history, which adds more Javascript dependencies and could introduce security risks). This project does add some additional features, however:
+It was built for the Uniface Lecture Webinar: Building Responsive Applications, and aims to provide a starting point for application architecture. It provides a simpler implementation than the WebFramework project (which contains some features you may not require, e.g. routing tables & html 5 history with its associated security risks) but mostly retains compatibility. This project does add some additional features, however:
 - login persistence via isolated storage or cookies
 - separate alert component to allow more flexible positioning (e.g. after navigation). 
 
 ####Dependencies
-Various UI resources are used:
+Various UI resources are used, and are loaded from an external Content Delivery Network (CDN) by default:
 - bootstrap
 - jquery
 - font-awesome
