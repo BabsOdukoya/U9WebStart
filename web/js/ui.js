@@ -38,20 +38,22 @@ app.ui = {
 	elarea.setProperty("style:display", "block");
   },
 
-  showError : function(msg) {
+  showError: function(msg) {
       console.error(msg);
 	  uniface.getInstance(app.alertPage).activate("showError", msg);
-  }
-  /*
+  },
+
+  makeNavActive: function() {
+  	$('#nav li.active').removeClass('active');
+	$(document.activeElement).addClass('active');
   },
   
   modalHide: function() {
-  		$('#myModal').modal('hide');
+  		$('#modal').modal('hide');
   },
   
   modalShow: function() {
-  	$('#myModal').modal('show');
+  	$('#modal').modal('show');
   }
-  */
   
 };

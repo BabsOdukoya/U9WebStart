@@ -51,14 +51,15 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-14T11:05:29.00</DAT>
+<DAT name="UTIMESTAMP">2017-03-02T11:24:27.00</DAT>
 <DAT name="USUB">I</DAT>
 <DAT name="UVAR">APP</DAT>
 <DAT name="ULABEL">DSPLOCALPROCS</DAT>
 <DAT name="ULAN">P</DAT>
 <DAT name="UDESCR" xml:space='preserve'>DSP Local Procs</DAT>
-<DAT name="UTEXT" xml:space='preserve'>#include App:lpGetUserName
+<DAT name="UTEXT" xml:space='preserve'>#include App:lpGetDSP
 #include App:lpGetUserId
+#include App:lpGetUserName
 </DAT>
 </OCC>
 </TABLE>

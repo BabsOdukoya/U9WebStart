@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-17T10:26:11.00</DAT>
-<DAT name="UCOMPSTAMP">2017-02-20T09:56:51.00</DAT>
+<DAT name="UTIMESTAMP">2017-03-06T15:02:00.00</DAT>
+<DAT name="UCOMPSTAMP">2017-03-06T15:02:01.00</DAT>
 <DAT name="ULABEL">BOOTMAIN</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Bootstrap Starter Main</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -204,7 +204,28 @@
 #Comment ----------------------------------------------
 </DAT>
 <DAT name="INIT" xml:space='preserve'>public web
-CONTAINER.FORM/init = "BOOTLOGIN"
+variables
+	string vSessionAttributes
+	string vUserName
+endvariables
+;Check the session attributes for a user name. A user name logged against the
+;session indicates that the user is logged in.
+vSessionAttributes = $item("SESSIONATTRIBUTES", $webinfo("webservercontext"))
+vUserName = $item("UserName", vSessionAttributes)
+
+if(vUserName == "")
+	;If the user isn't logged in then show the login page
+	;CONTAINER.FORM = "BOOTLOGIN"
+	CONTAINER.FORM = lpGetDsp("BOOTLOGIN", "", "", "")
+	;$instancehandle-&gt;showLogin(vResource, vAction, vParam)
+else
+	;If the user is logged in then show the main application
+	;$instancehandle-&gt;showApplication(vResource, vAction, vParam)
+	$instancehandle-&gt;showApplication()
+endif
+
+;Assigned as initial value
+;MODAL.FORM = lpGetDsp("&lt;MODAL_DSP&gt;", "", "", "")
 return (0)
 </DAT>
 <DAT name="CLEAR">clear</DAT>
@@ -248,9 +269,12 @@ else
    endif
 endif
 </DAT>
+<DAT name="GENERAL" xml:space='preserve'>#include APP:DSPLOCALPROCS
+</DAT>
 <DAT name="FORMPIC" xml:space='preserve'>
- &uFRM;TYP=E&uSEP;NAM=FORM.UI&uSEP;WID=25&uSEP;HEI=3&uSEP;HOC=25&uSEP;VOC=3&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=CONTAINER&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
+ &uFRM;TYP=E&uSEP;NAM=FORM.UI&uSEP;WID=25&uSEP;HEI=4&uSEP;HOC=25&uSEP;VOC=4&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=CONTAINER&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=MODAL&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
 <DAT name="TITLE" xml:space='preserve'>Bootstrap 3 Starter</DAT>
 <DAT name="SFUNC" xml:space='preserve'>#include U:zProcError  ; Report an unexpected failure in a proc statement.
 
@@ -264,7 +288,9 @@ endscope
 	activate "&lt;ALERT_DSP&gt;".clearMessage()
 	; Load Navigation component into DSP container
 	; The navigation component will load display forms in it's own container
-	CONTAINER.FORM = "BOOTNAV"
+
+	;CONTAINER.FORM = "&lt;NAV_DSP&gt;"
+	CONTAINER.FORM = lpGetDsp("&lt;NAV_DSP&gt;", "", "", "")
 	return 0
 
 end ;showApplication
@@ -288,7 +314,7 @@ end ;logOff
 
 ;---------------------------------------------------------
 ; Perform a full page refresh which will cause
-; APP_MAIN to be fully reloaded and all state held in the
+; this page to be fully reloaded and all state held in the
 ; browser (values, DSP instances etc) to be lost.
 ;---------------------------------------------------------
 weboperation fullPageRefresh
@@ -298,7 +324,28 @@ javascript
 	location.reload();
 
 endjavascript
-end ;fullPageRefresh</DAT>
+end ;fullPageRefresh
+
+
+;---------------------------------------------------------
+; Return translated text for Javascript operations
+;---------------------------------------------------------
+operation getText
+;---------------------------------------------------------
+public web
+params
+	string pID      : IN
+	string pMessage : INOUT
+endparams
+
+	if ($textexist("%%pID%%%"))
+		pMessage = $text("%%pID%%%")
+	else
+		pMessage = ""
+	endif
+
+end ; getText
+</DAT>
 <DAT name="HTMLPROP">EDITOR=TEXT</DAT>
 <DAT name="USCONTAINED">1</DAT>
 <DAT name="GETSTATE" xml:space='preserve'>variables
@@ -520,7 +567,6 @@ return (0)
 
   &lt;link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" /&gt;
   &lt;link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" /&gt;
-  &lt;link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" /&gt;
   &lt;link href="../css/main.css" rel="stylesheet" /&gt;
 
   &lt;script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"&gt;&lt;/script&gt;
@@ -528,29 +574,12 @@ return (0)
   &lt;script src="../js/main.js"&gt;&lt;/script&gt;
   &lt;script src="../js/ui.js"&gt;&lt;/script&gt;
   &lt;title&gt;Responsive Starter&lt;/title&gt;
-
-  &lt;!-- CSS Should be in an external file, but included inline here to show syntax 
-		Script moved to bottom of HTML body for performance
-    --&gt;
-  &lt;style&gt;
-
-	body {
-	  padding-top: 50px;
-	}
-
-	.notification {
-	  padding: 15px 15px;
-      text-align: center;
-	}
-
-	a.navbar-brand img { height: 48px; width: 56px; }
-  &lt;/style&gt;
-
 &lt;/head&gt;
 &lt;body class="bootstrap"&gt;
 
   &lt;div class="container"&gt;
 	&lt;div id="ufld:CONTAINER.FORM.UI"&gt;DspContainer&lt;/div&gt;
+     &lt;div id="ufld:MODAL.FORM.UI"&gt;DspContainer&lt;/div&gt;
   &lt;/div&gt;
 
 &lt;/body&gt;
@@ -867,6 +896,22 @@ return (0)
 <DAT name="INTERFACEMOD">VC40</DAT>
 <DAT name="WIDGETTYPE">EDITBOX</DAT>
 <DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">DSPCONTAINER</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-03-06T15:01:59.00</DAT>
+<DAT name="ULABEL">MODAL</DAT>
+<DAT name="GRP">FORM</DAT>
+<DAT name="UBASE">UI</DAT>
+<DAT name="UFORM">BOOTMAIN</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">VC40</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="INITVALUE">BOOTMODAL</DAT>
 <DAT name="UISOBJID">F</DAT>
 <DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
 <DAT name="WEBWIDGETTYPE">DSPCONTAINER</DAT>

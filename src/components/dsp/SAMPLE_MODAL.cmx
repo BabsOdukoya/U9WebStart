@@ -167,10 +167,10 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-09T11:44:41.00</DAT>
-<DAT name="UCOMPSTAMP">2017-03-09T11:44:43.00</DAT>
-<DAT name="ULABEL">BOOTLOGIN</DAT>
-<DAT name="UDESCR" xml:space='preserve'>Bootstrap Login Sample</DAT>
+<DAT name="UTIMESTAMP">2017-03-09T11:31:18.00</DAT>
+<DAT name="UCOMPSTAMP">2017-03-09T11:32:21.00</DAT>
+<DAT name="ULABEL">SAMPLE_MODAL</DAT>
+<DAT name="UDESCR" xml:space='preserve'>Bootstrap Modal example</DAT>
 <DAT name="WVPOS">3</DAT>
 <DAT name="WHPOS">1</DAT>
 <DAT name="WVSIZ">35</DAT>
@@ -204,16 +204,7 @@
 #Comment ----------------------------------------------
 </DAT>
 <DAT name="INIT" xml:space='preserve'>public web
-
-; Load Alert DSP into DspContainer for error handling
-ALERT.FORM/init = "&lt;ALERT_DSP&gt;"
-
-; Load Remembered E-Mail
-call lpLoadLogin()
-
-; Javascript initialisation
-webactivate $instancename.createJS()
-return (0)
+return 0
 </DAT>
 <DAT name="CLEAR">clear</DAT>
 <DAT name="RETRIEVE" xml:space='preserve'>retrieve
@@ -256,572 +247,158 @@ else
    endif
 endif
 </DAT>
-<DAT name="GENERAL" xml:space='preserve'>;-----------------------------------------------------------------------
-;	Change session ID for security
-;	Save UserName in Tomcat Session
-;-----------------------------------------------------------------------
-entry lpCreateAuthenticatedSession
-;-----------------------------------------------------------------------
-params
-	String pUserName : IN
-	String pUserId   : IN
-endparams
+<DAT name="GENERAL" xml:space='preserve'>;----------------------------------------------------------------
+entry lpDeleteAccount
+;----------------------------------------------------------------
 
-	;Send command to WRD to create a new session
-	putitem/id $webinfo("SESSIONCOMMANDS"), "ChangeSession", "NEW"
-	putitem/id $webinfo("SESSIONCOMMANDS"), "SetAttributes", "UserName=%%pUserName%%%&uSEP;UserId=%%pUserId%%%"
+	webmessage/info "This would now delete your account"
 	return 0
 
-end ;lpCreateAuthenticatedSession
+end ;lpDeleteAccount
 
 
-;-----------------------------------------------------------------------
-; Perform login authorisation
-;-----------------------------------------------------------------------
-entry lpDoLogin
-;-----------------------------------------------------------------------
-params
-	String  pUserName     : IN
-	String  pPassword     : IN
-	Boolean pAuthorised   : OUT
-	String  pUserId       : OUT
-	String  pMessage      : OUT
-endparams
-
-	;Plug in your own authentication service here
-	;$status = $signinService$-&gt;checkCredentials(pUserName, pPassword, pUserId, pAuthorised)
-	;if($status &lt; 0)
-	;	return $status
-	;endif
-	if (pPassword = "password")
-		pUserId = 1
-		pAuthorised = 1
-	else
-		pAuthorised = 0
-	endif
-
-	if(!pAuthorised)
-		pMessage = "User name or Password incorrect, please check your details and try again."
-		return 0
-	endif
-
-	return 0
-
-end ;lpDoLogin
-
-
-;-----------------------------------------------------------------------
-; Remember e-mail address in a Cookie
-;-----------------------------------------------------------------------
-entry lpSaveLogin
-;-----------------------------------------------------------------------
-variables
-	string vCookie
-endvariables
-
-	;If REMEMBER checked, save details in a cookie
-	;For mulitple named coookies, use "COOKIESIN" and "COOKIESOUT"
-	;See Defines trigger for NAMED_COOKIE definition
-	;See Uniface help for more options.
-#IF (&lt;LOGIN_STORAGE&gt;=ISOLATED)
-	webactivate $instancename.setLogin(EMAIL.FORM, REMEMBER.FORM)
-#ELSE
-
-	#IF (&lt;LOGIN_STORAGE&gt;=NAMED_COOKIE)
-	vCookie = $item("cookie", $webinfo("COOKIESIN"))
-	#ELSE
-	vCookie = $webinfo("USERCONTEXT")
-	#ENDIF
-	; If remember unchecked, delete cookie
-	if (vCookie &amp; !REMEMBER.FORM)
-		;delitem/id $webinfo("COOKIESOUT"), "cookie"
-		putitem/id vCookie, "email", ""
-	; Else if remember checked, save username in cookie
-	;elseif (REMEMBER.FORM)
-	else
-		putitem/id vCookie, "email",   EMAIL.FORM
-	endif
-	putitem/id vCookie, "EXPIRES", "1800" ; Expiry time in seconds
-	putitem/id vCookie, "secure",  "F"    ; set to T if HTTPS: only
-	#IF (&lt;LOGIN_STORAGE&gt;=NAMED_COOKIE)
-	putitem/id $webinfo("COOKIESOUT"), "cookie", vCookie
-	#ELSE
-	$webinfo("USERCONTEXT") = vCookie
-	#ENDIF
-#ENDIF
-
-end ; lpSaveLogin
-
-
-;-----------------------------------------------------------------------
-; Populate remembered e-mail address from Cookie
-;-----------------------------------------------------------------------
-entry lpLoadLogin
-;-----------------------------------------------------------------------
-variables
-	string vCookie
-endvariables
-
-#IF (&lt;LOGIN_STORAGE&gt;=ISOLATED)
-	webactivate $instancename.getLogin()
-#ELSE
-	#IF (&lt;LOGIN_STORAGE&gt;=NAMED_COOKIE)
-	;For mulitple/named coookies, use "COOKIESIN" and "COOKIESOUT"
-	vCookie = $item("cookie", $webinfo("COOKIESIN"))
-	#ELSE
-	vCookie = $webinfo("USERCONTEXT")
-	#ENDIF
-	if (vCookie)
-		EMAIL.FORM/init = $item("email", vCookie)
-		if (EMAIL.FORM)
-			REMEMBER.FORM/init = 1
-		endif
-	endif
-#ENDIF
-
-end ; lpLoadLogin
-</DAT>
+#include App:dspLocalProcs
+;#include App:lpSave</DAT>
 <DAT name="FORMPIC" xml:space='preserve'>
- &uFRM;TYP=E&uSEP;NAM=FORM.UI&uSEP;WID=25&uSEP;HEI=7&uSEP;HOC=25&uSEP;VOC=7&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=ALERT&uSEP;WID=20&uSEP;HEI=1&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=EMAIL&uSEP;WID=20&uSEP;HEI=1&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=PASSWORD&uSEP;WID=20&uSEP;HEI=1&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=REMEMBER&uSEP;WID=20&uSEP;HEI=1&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=SIGN_IN&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
-<DAT name="TITLE" xml:space='preserve'>Bootstrap 3 Starter</DAT>
-<DAT name="SFUNC" xml:space='preserve'>#include U:zProcError  ; Report an unexpected failure in a proc statement.
+ &uFRM;TYP=E&uSEP;NAM=COUNTRY.DUMMY&uSEP;WID=25&uSEP;HEI=7&uSEP;HOC=25&uSEP;VOC=7&uFRM;
+  &uFRM;TYP=L&uSEP;NAM=USERNAME.COUNTRY&uSEP;WID=20&uSEP;HEI=1&uSEP;LAB=User Name&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=USERNAME&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=L&uSEP;NAM=COUNTRY.COUNTRY&uSEP;WID=20&uSEP;HEI=1&uSEP;LAB=Country&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=COUNTRY&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=ID&uSEP;WID=20&uSEP;HEI=1&uFRM;
 
+
+ &uFRM;TYP=E&uSEP;NAM=BUTTONS.DUMMY&uSEP;WID=25&uSEP;HEI=5&uSEP;HOC=25&uSEP;VOC=5&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=SELECT&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=CONFIRM&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=MORE&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
+<DAT name="SFUNC" xml:space='preserve'>;----------------------------------------------------------------
+; Confirm Button Callback
 ;----------------------------------------------------------------
-; Constructor
-;----------------------------------------------------------------
-;operation init
-;----------------------------------------------------------------
-;
-;	;newinstance "APP_SIGNIN_SVC", $signinService$
-;	;if($status &lt; 0)
-;	;	return $status
-;	;endif
-;
-;end ;init
-
-;----------------------------------------------------------------
-;	Initialization Javascript, called from Execute
-;	Adds a form submit handler to catch user pressing Enter
-;----------------------------------------------------------------
-weboperation createJS
-javascript
-
-	var form = document.getElementById("uocc:FORM.UI:&lt;$componentName&gt;.1");
-	if (form.attachEvent) {
-		form.attachEvent("onsubmit", processForm);
-	} else {
-		form.addEventListener("submit", processForm);
-	}
-
-	var thisInstance = this;
-
-	function processForm(e) {
-		if (e.preventDefault){
-			e.preventDefault();
-		}
-
-		thisInstance.activate("login");
-
-		// Prevent the default form behavior
-		return false;
-	}
-
-endjavascript
-
-end ;createJS
-
-
-;----------------------------------------------------------------
-operation login
+operation confirmCallback
 ;----------------------------------------------------------------
 public web
 scope
-	input
-	output
-	operation &lt;ALERT_DSP&gt;.showError
-;	operation &lt;ALERT_DSP&gt;.clear
+	operation &lt;ALERT_DSP&gt;.showInfo
 endscope
 
-variables
-	Boolean vAuthorised
-	String  vMessage
-	String  vUserId
-	String  vCookie
-endvariables
+params
+	Numeric pResult : IN
+endparams
 
-	;Check the provided credentials
-	call lpDoLogin(EMAIL.FORM, PASSWORD.FORM, vAuthorised, vUserId, vMessage)
-	if($status &lt; 0)
-		activate "&lt;ALERT_DSP&gt;".showError("Runtime Error!", $status)
-		return 0
-	endif
-
-	;The check failed, re-present the login page to the user
-	if(!vAuthorised)
-		activate "&lt;ALERT_DSP&gt;".showError("Sign in failed", vMessage)
-		return 0
-	endif
-
-	;The credentials are valid, create a new "logged in" session
-	call lpCreateAuthenticatedSession(EMAIL.FORM, vUserId)
-	if($status &lt; 0)
-		activate "&lt;ALERT_DSP&gt;".showError("Failed to create authenticated session", $status)
-		return 0		
-	endif
-
-	; Save e-mail address in a cookie if REMEMBER checked
-	call lpSaveLogin()
-
-	;Remove the login DSP and show the main application page
-	activate "&lt;MAIN_DSP&gt;".showApplication()
-	if($status &lt; 0)
-		activate "&lt;ALERT_DSP&gt;".showError("Runtime Error!", $status)
-	else
-		activate "&lt;ALERT_DSP&gt;".clear()
-	endif
+	selectcase pResult
+		case 0
+			;User pressed 'Yes' in the delete dialog
+			;call lpDeleteAccount()
+			;activate "&lt;MAIN_DSP&gt;".logOff()
+			activate "&lt;ALERT_DSP&gt;".showInfo("Status", "You selected Yes")
+			return 0
+		case 1
+			;User pressed 'No' in the delete dialog
+			activate "&lt;ALERT_DSP&gt;".showInfo("Status", "You selected No")
+			return 0
+		elsecase
+			;Unexpected result, bomb out
+			return -1
+	endselectcase
 
 	return 0
 
-end ;login
+end ;confirmCallback
 
-#IF (&lt;LOGIN_STORAGE&gt;=ISOLATED)
+
+
 ;----------------------------------------------------------------
-; Get login from HTML 5 Isolated Storage
+; More Button Callback
 ;----------------------------------------------------------------
-weboperation getLogin
+operation moreCallback
+;----------------------------------------------------------------
+public web
 scope
-	output
+	operation &lt;ALERT_DSP&gt;.showInfo
 endscope
-javascript
-	var login = localStorage.getItem('&lt;JS_NAMESPACE&gt;.&lt;$componentname&gt;');
-	if (login) {
-		var o = this.getEntity('FORM.UI').getOccurrence(0);
-		o.getField('EMAIL').setValue(login);
-		var f = o.getField('REMEMBER');
-		f.setValue('T');
-	}
-endjavascript
-
-end ;getLogin
-
-
-;----------------------------------------------------------------
-; Save login in HTML 5 Isolated Storage 
-; or remove if remember unchecked
-;----------------------------------------------------------------
-weboperation setLogin
 params
-	string  pLogin    : IN ; Login value, e.g. e-mail address
-	boolean pRemember : IN ; Remember checkbox value flag
+	String pResult : IN
 endparams
 
-javascript
-	if (pRemember == 'T') {
-		if (pLogin.length &gt; 0) {
-			try {
-				localStorage.setItem("&lt;JS_NAMESPACE&gt;.&lt;$componentname&gt;", pLogin);
-			}
-			catch(e) { alert('Please upgrade your browser to save your login'); }
-		}
-	}
-	else {
-		try {
-			var l = localStorage.getItem('&lt;JS_NAMESPACE&gt;.&lt;$componentname&gt;');
-			if (l) {
-				localStorage.removeItem('&lt;JS_NAMESPACE&gt;.&lt;$componentname&gt;');
-			}
-		}
-			catch(e) { alert('Please upgrade your browser to save your login'); }
-	}
-endjavascript
+	if (pResult = 0)
+		activate "&lt;ALERT_DSP&gt;".showInfo("Return Value", "0 - Close button")
+	;else
+	;	activate "&lt;ALERT_DSP&gt;".showInfo("Return Value", pResult)
+	endif
+	return 0
 
-end ;setLogin
-#ENDIF
+end ;moreCallback
+
 
 ;----------------------------------------------------------------
-;	Destructor - activated when DSP is deassigned from container
+; Select Button Callback
 ;----------------------------------------------------------------
-weboperation detach
+operation selectCallback
 ;----------------------------------------------------------------
+public web
+params
+	String pResult : IN
+endparams
 
-javascript
-	this.getEntity("FORM.UI").clear();
-endjavascript
+	if (pResult)
+		COUNTRY.COUNTRY = pResult
+	endif
+	return 0
 
-end ;detach
+end ;selectCallback
+
+
+#include APP:DSPOPERATIONS
 </DAT>
 <DAT name="HTMLPROP">EDITOR=TEXT</DAT>
 <DAT name="USCONTAINED">1</DAT>
-<DAT name="GETSTATE" xml:space='preserve'>variables
-  string  WebServerContext, Cookie, Session, UserContext, sOuter
-  numeric i
-endvariables
-
-; =======================================================================================
-; Get state
-; ----------------------------------------------
-; The constants noState, byCookie and byStateManagerComponent are assumed to be defined in the Component Defines Trigger.
-#if ("&lt;$cmpStateManagedBy&gt;" = "&lt;noState&gt;")
-  ; Insert your code...
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byCookie&gt;")
-  getitem/id Cookie, $webinfo("COOKIESIN"), "MY_VARLIST_COOKIE"
-  getlistitems/id /component Cookie
-  ; Insert your code...
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byStateManagerComponent&gt;")
-  WebServerContext = $webinfo("WEBSERVERCONTEXT")
-  getitem/id Session, WebServerContext, "SESSION"
-  UserContext = ""
-  activate "USYSSTAT".GetState(Session, $instancename, UserContext)
-  getlistitems/id /component UserContext
-  ; Insert your code...
-#endif ; &lt;$cmpStateManagedBy&gt;
-
-; When using the State Manager Component:
-; Use the following activates to delete an occurrence in your state table or cleanup your state table (USTATE.STATE).
-;
-;   activate "USYSSTAT".DELETESTATE(SessionId, $instancename)
-;   operation DELETESTATE
-;   params
-;      string SessionId    : IN
-;      string InstanceName : IN
-;   endparams
-;
-;   activate "USYSSTAT".CLEANUPSTATE(TimeStamp)
-;   operation CLEANUPSTATE
-;   params
-;      datetime TimeStamp   : IN
-;   endparams
-;   When TimeStamp = '0' or 'empty' all occurrences will be removed.
-;   When you specify a particular 'datetime' all occurrences before 'datetime' will
-;   be removed.
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Parse request
-; ----------------------------------------------
-selectcase $webrequesttype
-case "DYNAMIC"
-  webload                         ; Get Data
-  if ($procerror &lt; 0)
-    $webinfo("OUTPUT") = lfHtmlMessage("WEBLOAD Failed", $procerrorcontext)
-    return -1
-  endif
-
-  i = 1
-  getitem sOuter, $componentinfo($instancename, "OUTERENTITIES"), i
-  while ($status &gt; 0)
-    reconnect "%%sOuter%%%"    ; Reconnect Data
-    if ($procerror &lt; 0)
-      $webinfo("OUTPUT") = lfHtmlMessage("RECONNECT Failed", $procerrorcontext)
-      return -1
-    elseif ($status != 0)
-      $webinfo("OUTPUT") = lfHtmlMessage("RECONNECT Failed", "$status=%%$status%%%&uSEP;ENTITY=%%sOuter%%%")
-      return -1
-    endif
-    i = i + 1
-    getitem sOuter, $componentinfo($instancename, "OUTERENTITIES"), i
-  endwhile
-
-  websetocc                       ; Set Occurrence Context
-  if ($procerror &lt; 0)
-    $webinfo("OUTPUT") = lfHtmlMessage("WEBSETOCC Failed", $procerrorcontext)
-    return -1
-  endif
-endselectcase
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Execution ok
-; ----------------------------------------------
-return (0)
-; =======================================================================================
-
-
-; Error page
-entry lfHtmlMessage
-returns string
-params
-  string pHeader      : IN
-  string pContextList : IN
-endparams
-variables
-  string vMessage, VadditionalList
-endvariables
-  vMessage = $replace($htmlmessage, 1, "__HEADER__", pHeader)
-  VadditionalList = $item("ADDITIONAL", pContextList)
-  delitem/id pContextList, "ADDITIONAL"
-  pContextList = $concat(pContextList, "&uSEP;&uSEP;Additional:&uSEP;", VadditionalList)
-  pContextList = $replace(pContextList, 1, "COMPONENT", "DSP_INSTANCE=%%$instancename%%%&uSEP;COMPONENT")
-  vMessage = $replace(vMessage, 1, "__MESSAGE__", $replace(pContextList, 1, "&uSEP;", "&lt;br /&gt;", -1))
-;   vMessage = $concat(vMessage, "&lt;br/ &gt;Additional:&lt;br /&gt;", $replace(vAdditional, 1, "&uSEP;", "&lt;br /&gt;", -1))
-  return vMessage
-
-htmlmessage:blockdata ~
-&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
- &lt;head&gt;
-  &lt;meta name="Default" content="Uniface 9" /&gt;
-  &lt;link rel="stylesheet" type="text/css" href="../css/udsp.css" /&gt;
-  &lt;title&gt;title&lt;/title&gt;
- &lt;/head&gt;
- &lt;body style="color: rgb(0, 0, 0); background-color: orange;" alink="#000099" link="#000099" vlink="#990099"&gt;
-  &lt;span style="font-weight: bold;"&gt;__HEADER__&lt;/span&gt;&lt;br /&gt;
-  &lt;hr style="width: 100%; height: 2px;" /&gt;
-  __MESSAGE__&lt;br /&gt;
- &lt;/body&gt;
-&lt;/html&gt;
-~
-
-end
-</DAT>
-<DAT name="SETSTATE" xml:space='preserve'>variables
-  string WebServerCntxt, SessionId, Varlist
-endvariables
-
-; =======================================================================================
-; Generate response
-; ----------------------------------------------
-selectcase $webresponsetype
-case "UPDATE"         ; Update page
-  websave               ; Generate data
-  if ($procerror &lt; 0)
-    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
-    return (0)
-  endif
-case "FULLPAGE"       ; Initial page
-  weblayout             ; Generate layout
-  if ($procerror &lt; 0)
-    webmessage/error "weblayout failed (Set State)%%^$procerror = %%$procerror%%%"
-    return ($status)
-  endif
-
-  webdefinitions        ; Generate component definitions
-  if ($procerror &lt; 0)
-    webmessage/error "webdefinitions failed (Set State)%%^$procerror = %%$procerror%%%"
-    return ($status)
-  endif
-
-  websave               ; Generate data
-  if ($procerror &lt; 0)
-    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
-    return (0)
-  endif
-endselectcase
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Set state
-; ----------------------------------------------
-; The constants noState, byCookie and byStateManagerComponent are assumed
-; to be defined in the Component Defines Trigger.
-#if ("&lt;$cmpStateManagedBy&gt;" = "&lt;noState&gt;")
-  ; Insert your code...
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byCookie&gt;")
-  ; Initialize Varlist with all component variables.
-  Varlist = $componentinfo($instancename, "VARIABLES")
-  ; Add the current values of the component variables to Varlist.
-  putlistitems/id /component Varlist
-  ; Insert your code...
-  putitem/id $webinfo("COOKIESOUT"), "MY_VARLIST_COOKIE", Varlist
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byStateManagerComponent&gt;")
-  WebServerCntxt = $webinfo("WEBSERVERCONTEXT")
-  getitem/id SessionId, WebServerCntxt, "SESSION"
-  ; Initialize Varlist with all component variables.
-  Varlist = $componentinfo($instancename, "VARIABLES")
-  ; Add the current values of the component variables to Varlist.
-  putlistitems/id /component Varlist
-  ; Insert your code...
-  activate "USYSSTAT".SetState(SessionId, $instancename, Varlist)
-#endif
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Execution ok
-; ----------------------------------------------
-return (0)
-; =======================================================================================
-</DAT>
-<DAT name="TPLACTUAL2" xml:space='preserve'>#comment The pre-defined constant $cmpStateManagedBy represents the component property 'State Managed By'.
-#comment See GetState and SetState triggers for usage.
-#comment It has one of the following values:
-
-#define  noState                 = 0
-#define  byCookie                = 1
-#define  byStateManagerComponent = 2
-
-#include APP:DSPDEFINES
-#define  LOGIN_STORAGE ISOLATED
-;#define  LOGIN_STORAGE COOKIE
-;#define  LOGIN_STORAGE NAMED_COOKIE
+<DAT name="GETSTATE" xml:space='preserve'>#include App:getState</DAT>
+<DAT name="SETSTATE" xml:space='preserve'>#include App:setState</DAT>
+<DAT name="TPLACTUAL2" xml:space='preserve'>#include App:dspDefines
 </DAT>
 <DAT name="USTATEMANAGEDBY">0</DAT>
 <DAT name="HTMLSKELETON" xml:space='preserve'>&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="utf-8" /&gt;
-  &lt;meta http-equiv="X-UA-Compatible" content="IE=edge" /&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Modal Sample&lt;/title&gt;
+  &lt;/head&gt;
 
-  &lt;!--link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"--&gt;
-  &lt;link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" /&gt;
-  &lt;!-- link href="../../lib/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" / --&gt;
-  &lt;script src="../../lib/jquery/jquery-1.11.1.min.js"&gt;&lt;/script&gt;
-  &lt;script src="../../lib/bootstrap/js/bootstrap.min.js"&gt;&lt;/script&gt;
-  &lt;title&gt;Bootstrap 3 Login&lt;/title&gt;
-&lt;/head&gt;
-&lt;body class="bootstrap"&gt;
+  &lt;body&gt;
 
-  &lt;div class="container"&gt;
-
-    &lt;div id="ufld:ALERT.FORM.UI"&gt;DspContainer&lt;/div&gt;
-
-    &lt;form class="form-signin" id="uocc:FORM.UI"&gt;
-
-      &lt;h2 class="form-signin-heading"&gt;WebStart sign in&lt;/h2&gt;
-      &lt;p class="text-info"&gt;suggested password: password&lt;/p&gt;
-
-      &lt;!--
-      &lt;div class="panel panel-default"&gt;
-        &lt;div class="panel-heading"&gt;Panel heading without title&lt;/div&gt;
-        &lt;div class="panel-body"&gt;
-       --&gt;
-
-      &lt;div class="input-group"&gt;
-        &lt;span class="input-group-addon"&gt;&lt;i class="fa fa-envelope fa-fw"&gt;&lt;/i&gt;&lt;/span&gt;
-	   &lt;input type="email" id="ufld:EMAIL.FORM.UI" class="form-control" placeholder="Email" autofocus&gt;
+    &lt;br&gt;
+    &lt;form class="form-horizontal" role="form"&gt;
+      &lt;div class="form-group"&gt;
+        &lt;label id="ulbl:USERNAME.COUNTRY.DUMMY" class="col-xs-2 control-label"&gt;&lt;/label&gt;
+        &lt;div class="col-xs-6"&gt;
+          &lt;input type="text" id="ufld:USERNAME.COUNTRY.DUMMY" value="Editbox" class="form-control"/&gt;
+		&lt;/div&gt;
+		&lt;div class="col-xs-4"&gt;
+            &lt;input type="button" id="ufld:MORE.BUTTONS.DUMMY" value="More" class="btn btn-info"/&gt;
+            &lt;!-- &lt;p class="help-block"&gt;More information overlay&lt;/p&gt; --&gt;
+        &lt;/div&gt;
       &lt;/div&gt;
-
-      &lt;div class="input-group"&gt;
-        &lt;span class="input-group-addon"&gt;&lt;i class="fa fa-key fa-fw"&gt;&lt;/i&gt;&lt;/span&gt;
-        &lt;input type="password" class="form-control" id="ufld:PASSWORD.FORM.UI" placeholder="Password" autocomplete="off"&gt;
+      &lt;div class="form-group"&gt;
+        &lt;label id="ulbl:COUNTRY.COUNTRY.DUMMY" class="col-xs-2 control-label"&gt;&lt;/label&gt;
+        &lt;div class="col-xs-6"&gt;
+          &lt;input type="text" id="ufld:COUNTRY.COUNTRY.DUMMY" value="Editbox" class="form-control"/&gt;
+		&lt;/div&gt;
+        &lt;div class="col-xs-4"&gt;
+          &lt;input type="button" id="ufld:SELECT.BUTTONS.DUMMY" value="Select" class="btn btn-info"/&gt;
+          &lt;!-- &lt;p class="help-block"&gt;Select from list&lt;/p&gt; --&gt;
+        &lt;/div&gt;
       &lt;/div&gt;
-
-      &lt;div class="checkbox"&gt;
-        &lt;label&gt;
-          &lt;input type="checkbox" id="ufld:REMEMBER.FORM.UI"&gt; Remember me
-        &lt;label&gt;
+      &lt;div class="form-group" id="uent:BUTTONS.DUMMY"&gt;
+        &lt;div class="col-xs-offset-2 col-xs-10"&gt;
+          &lt;input type="button" id="ufld:CONFIRM.BUTTONS.DUMMY" value="Confirm" class="btn btn-info"/&gt;
+          &lt;!-- &lt;p class="help-block"&gt;Click to show modal confirmation dialog&lt;/p&gt; --&gt;
+        &lt;/div&gt;
       &lt;/div&gt;
-      &lt;button id="ufld:SIGN_IN.FORM.UI" type="submit" class="btn btn-lg btn-primary btn-block"&gt;Sign in&lt;/button&gt;
-
     &lt;/form&gt;
-
-  &lt;/div&gt;&lt;!-- /.container --&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;</DAT>
+    
+  &lt;/body&gt;
+&lt;/html&gt;
+</DAT>
 </OCC>
 </TABLE>
 <TABLE>
@@ -967,13 +544,30 @@ return (0)
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F3,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-09T16:14:42.00</DAT>
-<DAT name="ULABEL">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTLOGIN</DAT>
+<DAT name="UTIMESTAMP">2017-01-31T14:49:18.00</DAT>
+<DAT name="ULABEL">BUTTONS</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">SAMPLE_MODAL</DAT>
 <DAT name="U_BORD">N</DAT>
 <DAT name="U_DBMS">XXX</DAT>
 <DAT name="U_UPD">Y</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="DELOCCR">remocc</DAT>
+<DAT name="CREOCC">creocc</DAT>
+<DAT name="UISBCLASS">F</DAT>
+<DAT name="UISASSOC">F</DAT>
+<DAT name="U_SVCUSE">N</DAT>
+<DAT name="HTML_ENTPROP" xml:space='preserve'>U_ATLEASTONE=1&uSEP;U_STARTOCC=1</DAT>
+<DAT name="UWEBWIDGETTYPE">U_NONE</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-03-03T10:19:34.00</DAT>
+<DAT name="ULABEL">COUNTRY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">SAMPLE_MODAL</DAT>
+<DAT name="U_BORD">N</DAT>
+<DAT name="U_DBMS">XXX</DAT>
+<DAT name="U_UPD">O</DAT>
 <DAT name="UINHERIT">F</DAT>
 <DAT name="DELOCCR">remocc</DAT>
 <DAT name="CREOCC">creocc</DAT>
@@ -1107,134 +701,187 @@ return (0)
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\E6,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-17T12:01:11.00</DAT>
-<DAT name="ULABEL">ALERT</DAT>
-<DAT name="GRP">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTLOGIN</DAT>
+<DAT name="UTIMESTAMP">2017-03-03T11:55:50.00</DAT>
+<DAT name="ULABEL">CONFIRM</DAT>
+<DAT name="GRP">BUTTONS</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">SAMPLE_MODAL</DAT>
 <DAT name="U_DTYP">S</DAT>
 <DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">C*</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="DETAIL" xml:space='preserve'>public web
+scope
+	input
+	output
+;	operation &lt;MODAL_DSP&gt;.show
+endscope
+
+variables
+	String vMessage
+endvariables
+
+vMessage = "Do you want to continue?"
+
+;Uniface Server-side method
+;activate "&lt;MODAL_DSP&gt;".show(        %\
+;  "Confirmation",                   %\
+;  vMessage,                         %\
+;  "",                               %\
+;  "Yes,No",                         %\
+;  $instancename,                    %\
+;  "confirmCallback")
+
+;Activate browser-side method
+webactivate "&lt;MODAL_DSP&gt;".jsShow(   %\
+  "Confirmation",                   %\
+  vMessage,                         %\
+   "",                              %\
+  "Yes,No",                         %\
+  $instancename,                    %\
+  "confirmCallback")
+
+return 0</DAT>
+<DAT name="INITVALUE">Confirm</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">COMMANDBUTTON</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-03-03T10:21:03.00</DAT>
+<DAT name="ULABEL">COUNTRY</DAT>
+<DAT name="GRP">COUNTRY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">SAMPLE_MODAL</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">C3</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-03-03T10:21:50.00</DAT>
+<DAT name="ULABEL">ID</DAT>
+<DAT name="GRP">COUNTRY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">SAMPLE_MODAL</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">VC40</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-03-09T11:31:18.00</DAT>
+<DAT name="ULABEL">MORE</DAT>
+<DAT name="GRP">BUTTONS</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">SAMPLE_MODAL</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">X</DAT>
 <DAT name="SYNTAXMOD">NED</DAT>
-<DAT name="INTERFACEMOD">VC40</DAT>
-<DAT name="WIDGETTYPE">EDITBOX</DAT>
-<DAT name="UINHERIT">F</DAT>
-<DAT name="UISOBJID">F</DAT>
-<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
-<DAT name="WEBWIDGETTYPE">DSPCONTAINER</DAT>
-</OCC>
-<OCC>
-<DAT name="UTIMESTAMP">2017-02-09T16:14:42.00</DAT>
-<DAT name="ULABEL">EMAIL</DAT>
-<DAT name="GRP">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTLOGIN</DAT>
-<DAT name="U_DTYP">S</DAT>
-<DAT name="U_INDB">N</DAT>
-<DAT name="INTERFACEMOD">VC40</DAT>
-<DAT name="WIDGETTYPE">EDITBOX</DAT>
-<DAT name="UINHERIT">F</DAT>
-<DAT name="UISOBJID">F</DAT>
-<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
-<DAT name="UFTRIGGERS" xml:space='preserve'>;webtrigger onBlur
-;javascript
-;	console.log('onBlur');
-;endjavascript
-;end ; onBlur
-;
-;trigger onChange
-;public web
-;	putmess "onChange"
-;end ; onChange
-</DAT>
-<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
-</OCC>
-<OCC>
-<DAT name="UTIMESTAMP">2017-02-09T19:14:21.00</DAT>
-<DAT name="ULABEL">PASSWORD</DAT>
-<DAT name="GRP">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTLOGIN</DAT>
-<DAT name="U_DTYP">S</DAT>
-<DAT name="U_INDB">N</DAT>
-<DAT name="INTERFACEMOD">VC40</DAT>
-<DAT name="WIDGETTYPE">EDITBOX</DAT>
-<DAT name="UINHERIT">F</DAT>
-<DAT name="UISOBJID">F</DAT>
-<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
-<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
-</OCC>
-<OCC>
-<DAT name="UTIMESTAMP">2017-02-14T14:14:04.00</DAT>
-<DAT name="ULABEL">REMEMBER</DAT>
-<DAT name="GRP">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTLOGIN</DAT>
-<DAT name="U_DTYP">B</DAT>
-<DAT name="U_INDB">N</DAT>
-<DAT name="INTERFACEMOD">B</DAT>
-<DAT name="WIDGETTYPE">EDITBOX</DAT>
-<DAT name="UINHERIT">F</DAT>
-<DAT name="UISOBJID">F</DAT>
-<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
-<DAT name="WEBWIDGETTYPE">CHECKBOX</DAT>
-</OCC>
-<OCC>
-<DAT name="UTIMESTAMP">2017-02-09T19:24:24.00</DAT>
-<DAT name="ULABEL">SIGN_IN</DAT>
-<DAT name="GRP">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTLOGIN</DAT>
-<DAT name="U_DTYP">S</DAT>
-<DAT name="U_INDB">N</DAT>
 <DAT name="INTERFACEMOD">C1</DAT>
 <DAT name="WIDGETTYPE">EDITBOX</DAT>
 <DAT name="UINHERIT">F</DAT>
+<DAT name="DETAIL" xml:space='preserve'>public web
+scope
+	input
+	output
+	operation &lt;MODAL_DSP&gt;.show
+endscope
+
+variables
+	String vMessage
+	String vParams
+	String vInstanceName
+endvariables
+
+vParams = $concat("USERNAME=", USERNAME.COUNTRY)
+
+; Pre-activate components to reduce HTTP GET requests
+vInstanceName = lpGetDSP("SAMPLE_MORE", "", vParams, "")
+
+activate "&lt;MODAL_DSP&gt;".show( %\
+  "More Information",        %\
+  vMessage,                  %\
+  vInstanceName,             %\
+  "Close",                   %\
+  $instancename,             %\
+  "moreCallback")
+
+return 0
+</DAT>
+<DAT name="INITVALUE">...</DAT>
 <DAT name="UISOBJID">F</DAT>
 <DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
-<DAT name="UFTRIGGERS" xml:space='preserve'>webtrigger onClick
-javascript
-
-this.getInstance().activate("login");
-
-endjavascript
-end ;onClick</DAT>
-<DAT name="WEBWIDGETTYPE">ATTRIBUTESONLY</DAT>
+<DAT name="WEBWIDGETTYPE">COMMANDBUTTON</DAT>
 </OCC>
-</TABLE>
-<TABLE>
-<DSC name="UXREGS" model="DICT" system="S" pseudo ="73" level="1" noupdate="0"
- rbk="0" ffsql="0" transnr="0" segsize="0" ufocc="0" charset=".U">
-<FLD name="UTIMESTAMP" seqno="1" type="E" level="2" pack="0" scale="0" length="15"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_STAT" seqno="2" type="S" level="2" pack="0" scale="0" length="4"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_TYPE" seqno="3" type="S" level="2" pack="0" scale="0" length="2"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_FORMLIB" seqno="4" type="S" level="2" pack="0" scale="0" length="16"
- pointer="0" inum="2" ufocc="0" mandatory="yes" idxnum="1,3" idxsnr="101,1" />
-<FLD name="U_NAME" seqno="5" type="S" level="2" pack="0" scale="0" length="32"
- pointer="0" inum="2" ufocc="0" mandatory="yes" idxnum="1,2" idxsnr="102,1" />
-<FLD name="UVERS" seqno="6" type="S" level="2" pack="0" scale="0" length="12"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="UDESCR" seqno="7" type="S" level="2" pack="0" scale="0" length="25"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_DTYP" seqno="8" type="S" level="2" pack="0" scale="0" length="2"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_LAYOUT" seqno="9" type="S" level="2" pack="0" scale="0" length="46"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_DOC" seqno="10" type="S" level="2" pack="141" scale="0" length="0"
- pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C1,0,0,0,,0,0,0,," />
-<FLD name="USCOPE" seqno="11" type="S" level="2" pack="141" scale="0" length="0"
- pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C2,0,0,0,,0,0,0,," />
-<FLD name="UHINTERFACE" seqno="12" type="S" level="2" pack="141" scale="0" length="0"
- pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C3,0,0,0,,0,0,0,," />
-</DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-09T16:14:42.00</DAT>
-<DAT name="U_FORMLIB">BOOTLOGIN</DAT>
-<DAT name="U_NAME">BREADCRUMB_CUR</DAT>
-<DAT name="UDESCR" xml:space='preserve'>Current Breadcrumb Occ</DAT>
-<DAT name="U_DTYP">N</DAT>
+<DAT name="UTIMESTAMP">2017-03-08T14:06:56.00</DAT>
+<DAT name="ULABEL">SELECT</DAT>
+<DAT name="GRP">BUTTONS</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">SAMPLE_MODAL</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">X</DAT>
+<DAT name="SYNTAXMOD">NED</DAT>
+<DAT name="INTERFACEMOD">C1</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="DETAIL" xml:space='preserve'>public web
+scope
+	input
+	output
+;	operation &lt;MODAL_DSP&gt;.show
+endscope
+
+variables
+	String vMessage
+	Struct vParams
+	String vInstanceName
+endvariables
+
+vMessage = ""
+
+; Pre-activate components to reduce HTTP GET requests
+vInstanceName = lpGetDSP("SAMPLE_SELECT", "", "ID=2", "")
+
+webactivate "&lt;MODAL_DSP&gt;".jsShow(   %\
+  "Select Country",                 %\
+  vMessage,                         %\
+  vInstanceName,                    %\
+  "Close",                          %\
+  $instancename,                    %\
+  "selectCallback")
+
+return 0
+</DAT>
+<DAT name="INITVALUE">Select</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">COMMANDBUTTON</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-03-03T10:24:11.00</DAT>
+<DAT name="ULABEL">USERNAME</DAT>
+<DAT name="GRP">COUNTRY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">SAMPLE_MODAL</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">VC40</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
 </OCC>
 </TABLE>
 </UNIFACE>

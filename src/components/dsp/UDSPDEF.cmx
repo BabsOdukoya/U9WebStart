@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2009-12-29T10:54:58.00</DAT>
-<DAT name="UCOMPSTAMP">2017-02-20T09:56:52.00</DAT>
+<DAT name="UTIMESTAMP">2017-03-03T11:07:14.00</DAT>
+<DAT name="UCOMPSTAMP">2017-02-20T15:39:23.00</DAT>
 <DAT name="ULABEL">UDSPDEF</DAT>
 <DAT name="WVPOS">3</DAT>
 <DAT name="WHPOS">1</DAT>
@@ -185,7 +185,7 @@
 #info symbol TEMPLATENAME is already or also defined as a global or local constant
 #endif
 #define TEMPLATENAME=
-#Comment
+#Comment 
 
 #Comment end_of_references
 
@@ -263,7 +263,7 @@ endif
 <DAT name="PERF">#DEF</DAT>
 <DAT name="SFUNC" xml:space='preserve'>#include U:zProcError  ; Report an unexpected failure in a proc statement.
 </DAT>
-<DAT name="HTMLPROP" xml:space='preserve'>MODIFIED_BY=9.4.01&uSEP;EDITOR=GRAPHICAL</DAT>
+<DAT name="HTMLPROP" xml:space='preserve'>MODIFIED_BY=9.7.03&uSEP;EDITOR=GRAPHICAL</DAT>
 <DAT name="USCONTAINED">1</DAT>
 <DAT name="GETSTATE" xml:space='preserve'>variables
   string  WebServerContext, Cookie, Session, UserContext, sOuter
@@ -472,18 +472,16 @@ return (0)
 </DAT>
 <DAT name="USTATEMANAGEDBY">0</DAT>
 <DAT name="HTMLSKELETON" xml:space='preserve'>&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
- &lt;head&gt;
-  &lt;meta name="Default" content="Uniface 9" /&gt;
-  &lt;link rel="stylesheet" type="text/css" href="../css/udsp.css" /&gt;
-   &lt;title&gt;title&lt;/title&gt;
- &lt;/head&gt;
+&lt;html lang="en"&gt;&lt;head&gt;
+  &lt;meta name="Default" content="Uniface 9"&gt;
+  &lt;link rel="stylesheet" type="text/css" href="../css/udsp.css"&gt;
+   &lt;title&gt;title&lt;/title&gt;&lt;/head&gt;
+
  &lt;body&gt;
 
   page content here
 
- &lt;/body&gt;
-&lt;/html&gt;</DAT>
+ &lt;/body&gt;&lt;/html&gt;</DAT>
 </OCC>
 </TABLE>
 <TABLE>

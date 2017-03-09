@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-17T12:40:11.00</DAT>
-<DAT name="UCOMPSTAMP">2017-02-20T09:56:51.00</DAT>
+<DAT name="UTIMESTAMP">2017-03-06T09:55:58.00</DAT>
+<DAT name="UCOMPSTAMP">2017-03-06T09:55:58.00</DAT>
 <DAT name="ULABEL">BOOTALERT</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Bootstrap Alert Handler</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -256,6 +256,15 @@ endif
   &uFRM;TYP=F&uSEP;NAM=DESCRIPTION&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
 <DAT name="TITLE" xml:space='preserve'>Bootstrap 3 Starter</DAT>
 <DAT name="SFUNC" xml:space='preserve'>#include U:zProcError  ; Report an unexpected failure in a proc statement.
+
+;---------------------------------------------------------
+; The attach operation is invoked when the DSP is
+; assinged to a DSPContainer widget
+;---------------------------------------------------------
+operation attach
+public web
+	webactivate $instancename.setupJS()
+end ; attach
 
 ;---------------------------------------------------------
 ; Javascript Initialization - called from Execute
@@ -571,6 +580,7 @@ return (0)
 #define  noState                 = 0
 #define  byCookie                = 1
 #define  byStateManagerComponent = 2
+
 </DAT>
 <DAT name="USTATEMANAGEDBY">0</DAT>
 <DAT name="HTMLSKELETON" xml:space='preserve'>&lt;!DOCTYPE html&gt;

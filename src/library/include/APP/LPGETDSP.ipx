@@ -51,19 +51,55 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-03T11:40:39.00</DAT>
+<DAT name="UTIMESTAMP">2017-03-06T14:41:25.00</DAT>
 <DAT name="USUB">I</DAT>
 <DAT name="UVAR">APP</DAT>
-<DAT name="ULABEL">DSPDEFINES</DAT>
+<DAT name="ULABEL">LPGETDSP</DAT>
 <DAT name="ULAN">P</DAT>
-<DAT name="UDESCR" xml:space='preserve'>DSP Definitions</DAT>
-<DAT name="UTEXT" xml:space='preserve'>#define MAIN_DSP  BOOTMAIN
-#define ALERT_DSP BOOTALERT
-#define HOME_DSP  BOOTTABS
-#define MODAL_DSP BOOTMODAL
-#define NAV_DSP   BOOTNAV
-#define JS_NAMESPACE app
-</DAT>
+<DAT name="UDESCR" xml:space='preserve'>Get or create an Instance</DAT>
+<DAT name="UTEXT" xml:space='preserve'>;------------------------------------------------------------------------
+; Create a new DSP
+;
+; Returns the DSP's instance name so that it can be used to assign
+; the created DSP directly into a DSP Container.
+;
+; DSP_CONTAINER.DUMMY = lpGetDsp("MY_DSP", "", "", "")
+;------------------------------------------------------------------------
+entry lpGetDsp
+;------------------------------------------------------------------------
+returns String
+
+params
+	String pComponentName : IN
+	String pInstanceName  : IN
+	String pOptions       : IN
+	Handle pHandle        : OUT
+endparams
+
+variables
+	String vInstanceName
+endvariables
+
+	;structToJson vOptionsJson, pOptions
+
+	;If pInstanceName is blank then default it to be the same as pComponentName
+	if (pInstanceName == "")
+		vInstanceName = pComponentName
+	else
+		vInstanceName = pInstanceName 
+	endif
+	newinstance pComponentName, vInstanceName
+
+	; If parameters supplied, call create method
+	if (pOptions)
+		pHandle = $instancehandle(vInstanceName)
+		;$status = pHandle-&gt;appCreate(vOptionsJson)
+		$status = pHandle-&gt;create(pOptions)
+	endif
+
+	return vInstanceName
+
+end ;lpGetDsp</DAT>
 </OCC>
 </TABLE>
 </UNIFACE>

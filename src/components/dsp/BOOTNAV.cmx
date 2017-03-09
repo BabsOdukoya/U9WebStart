@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-17T12:03:36.00</DAT>
-<DAT name="UCOMPSTAMP">2017-02-20T09:56:52.00</DAT>
+<DAT name="UTIMESTAMP">2017-03-09T13:58:48.00</DAT>
+<DAT name="UCOMPSTAMP">2017-03-09T13:58:48.00</DAT>
 <DAT name="ULABEL">BOOTNAV</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Bootstrap Starter Main</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -215,8 +215,10 @@ call lpBuildBreadcrumb	; Create Breadcrumb Links
 ; Extract name from e-mail address
 vStatus = $split(lpGetUserName(), 1, "@", vUser)
 vStatus = $split(vUser,           1, ".", USERNAME.STATUS)
-CONTAINER.FORM  = "BOOTPAGE"
-ALERT.FORM = "&lt;ALERT_DSP&gt;"
+
+; See Defines trigger for definitions below
+CONTAINER.FORM  = "&lt;HOME_DSP&gt;"
+ALERT.FORM      = "&lt;ALERT_DSP&gt;"
 activate $instancename.setupJS()
 return (0)
 </DAT>
@@ -327,12 +329,46 @@ end ; lpBuildBreadcrumb
 <DAT name="TITLE" xml:space='preserve'>Bootstrap 3 Starter</DAT>
 <DAT name="SFUNC" xml:space='preserve'>#include U:zProcError  ; Report an unexpected failure in a proc statement.
 
+;--------------------------------------------------------------------------------
+;	Javascript initiation logic (make first nav links active)
+;--------------------------------------------------------------------------------
 weboperation setupJS
 javascript
   	$('#navbar li:first').addClass('active');
   	$('#breadcrumb li:first').addClass('active');
 endjavascript
 end ; setupJS
+
+;--------------------------------------------------------------------------------
+;	Load new page on nav click
+;--------------------------------------------------------------------------------
+operation navClick
+params
+	string pItem : IN
+endparams
+public web
+
+selectcase pItem
+  case "Home"
+    CONTAINER.FORM = "&lt;HOME_DSP&gt;"
+
+  case "About"
+    ;Activate browser-side method
+    webactivate "&lt;MODAL_DSP&gt;".jsShow(         %\
+      "About",                                %\
+      "Sample created by David Akerman 2017 for Uniface responsive web development lectures", %\
+      "",                                     %\
+      "Close",                                %\
+      "",                                     %\
+      "")
+
+  elsecase
+	activate "&lt;ALERT_DSP&gt;".showInfo("Info:", $concat(pItem, " page under construction"))
+
+endselectcase
+return 0
+
+end ; navClick
 </DAT>
 <DAT name="HTMLPROP">EDITOR=TEXT</DAT>
 <DAT name="USCONTAINED">1</DAT>
@@ -1022,7 +1058,7 @@ return (0)
 <DAT name="WEBWIDGETTYPE">DSPCONTAINER</DAT>
 </OCC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-09T17:53:03.00</DAT>
+<DAT name="UTIMESTAMP">2017-03-09T13:58:48.00</DAT>
 <DAT name="ULABEL">LI</DAT>
 <DAT name="GRP">NAV</DAT>
 <DAT name="UBASE">UI</DAT>
@@ -1041,9 +1077,12 @@ return (0)
 ;JavaScript implementation
 webtrigger
 javascript
-	$('li.active').removeClass('active');
-	$(document.activeElement).addClass('active');
-	alert(this.getValue() + ' (' + document.activeElement.id + ') link clicked');
+	//alert(this.getValue() + ' (' + document.activeElement.id + ') link clicked');
+	//this.getInstance().getEntity("FORM.UI").getOccurrence(0).getField("CONTAINER").setValue("&lt;HOME_DSP&gt;");
+	//uniface.getInstance("&lt;ALERT_DSP&gt;").activate("showInfo", "Info", "Under Construction");
+
+	this.getInstance().activate("navClick", this.getValue());
+	&lt;JS_NAMESPACE&gt;.ui.makeNavActive();
 endjavascript
 </DAT>
 <DAT name="UISOBJID">F</DAT>
