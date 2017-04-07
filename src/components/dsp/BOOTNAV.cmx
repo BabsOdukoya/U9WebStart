@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-09T13:58:48.00</DAT>
-<DAT name="UCOMPSTAMP">2017-03-09T13:58:48.00</DAT>
+<DAT name="UTIMESTAMP">2017-04-07T12:20:40.00</DAT>
+<DAT name="UCOMPSTAMP">2017-04-07T13:20:40.00</DAT>
 <DAT name="ULABEL">BOOTNAV</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Bootstrap Starter Main</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -603,7 +603,7 @@ return (0)
           &lt;span class="icon-bar"&gt;&lt;/span&gt;
           &lt;span class="icon-bar"&gt;&lt;/span&gt;
         &lt;/button&gt;
-        &lt;a class="navbar-brand" href="#"&gt;&lt;img src="../../lib/img/Red_A_RBG_sm.png" alt="logo"&gt;&lt;/a&gt;
+        &lt;a class="navbar-brand" href="#"&gt;&lt;img src="../img/Red_A_RBG_sm.png" alt="logo"&gt;&lt;/a&gt;
       &lt;/div&gt;
 
       &lt;div id="navbar" class="collapse navbar-collapse"&gt;
