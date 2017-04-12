@@ -15,9 +15,16 @@ usys:usys.uar
 *.log                 .\log\*.log
 
 [LOGICALS]
+; Specify your filters using a comma separated list in order of processing
+;; UWEBOUTPUTFILTERS = mywebfilter
+;USYSHTTPTITLE   Application Error
+;USYSHTTPHEADER  <pre>An error prevented the execution of your request</pre>
+;USYSHTTPBODY    Please contact your System Administrator
+;USYSHTTPBGCOLOR wheat
+;;USYSHTTPBACKGROUND ../img/error.jpg
+;USYSHTTPFRAME   false
 BASE_URL              = ../
 STATE_MODULE          = TOMCAT
-
 
 [WEB]
 ; The following assignment setting is used to calculate the hash-values to protect non-editable fields.
@@ -28,3 +35,5 @@ $server_secret = hCRivhboXoFHjdfZevndGlbpnXScWKame2dFfBnkIJesFAA7tCUntLCrtILMqgZ
 
 ; The following assignment setting is used to specify the location of base URL for JavaScript and CSS resources for DSPs
 $uniface_runtime_base_url = ../common
+
+[LOGICALS]
