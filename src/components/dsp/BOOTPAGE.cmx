@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-09T17:22:38.00</DAT>
-<DAT name="UCOMPSTAMP">2017-03-09T17:22:38.00</DAT>
+<DAT name="UTIMESTAMP">2017-05-26T10:06:49.00</DAT>
+<DAT name="UCOMPSTAMP">2017-06-12T10:18:50.00</DAT>
 <DAT name="ULABEL">BOOTPAGE</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Basic Page</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -242,6 +242,7 @@
     &lt;label class="control-label col-sm-2" id="ulbl:MSG.DUMMY.DUMMY"&gt;Label&lt;/label&gt;
     &lt;div class="col-sm-10"&gt;
      &lt;input class="form-control" id="ufld:MSG.DUMMY.DUMMY" value="" /&gt;
+	 &lt;label id="uflderror:MSG.DUMMY.DUMMY"/&gt;&lt;/label&gt;
     &lt;/div&gt;
    &lt;/div&gt;
 
@@ -249,6 +250,7 @@
     &lt;label class="control-label col-sm-2" id="ulbl:DESCR.DUMMY.DUMMY"&gt;Label&lt;/label&gt;
     &lt;div class="col-sm-10"&gt;
       &lt;input class="form-control" id="ufld:DESCR.DUMMY.DUMMY" value="" /&gt;
+	 &lt;label id="uflderror:DESCR.DUMMY.DUMMY"/&gt;&lt;/label&gt;
     &lt;/div&gt;
    &lt;/div&gt;
 
@@ -264,7 +266,7 @@
 
    &lt;div class="form-group"&gt;
     &lt;div class="col-sm-offset-2 col-sm-10"&gt;
-     &lt;input type="button" class="btn btn-primary" id="ufld:BTN_MESSAGE.DUMMY.DUMMY" value=""/&gt;
+     &lt;input type="button" class="btn btn-primary fa" id="ufld:BTN_MESSAGE.DUMMY.DUMMY" value=""/&gt;
     &lt;/div&gt;
    &lt;/div&gt;
   &lt;/div&gt;
@@ -556,13 +558,13 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\E6,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-17T12:53:47.00</DAT>
+<DAT name="UTIMESTAMP">2017-05-26T10:06:10.00</DAT>
 <DAT name="ULABEL">BTN_MESSAGE</DAT>
 <DAT name="GRP">DUMMY</DAT>
 <DAT name="UBASE">DUMMY</DAT>
 <DAT name="UFORM">BOOTPAGE</DAT>
 <DAT name="U_DTYP">S</DAT>
-<DAT name="U_INDB">B</DAT>
+<DAT name="U_INDB">N</DAT>
 <DAT name="SYNTAXMOD">NED</DAT>
 <DAT name="INTERFACEMOD">VC10</DAT>
 <DAT name="WIDGETTYPE">EDITBOX</DAT>
@@ -589,6 +591,8 @@ endscope
 ;	uniface.getInstance("&lt;ALERT_DSP&gt;").activate("showInfo", m, d);
 ;endjavascript
 end
+</DAT>
+<DAT name="UFORMAT" xml:space='preserve'>$format = $concat($string("&lt;B_NOTIFY_ICON&gt;; "), " Alert")
 </DAT>
 <DAT name="INITVALUE">Alert</DAT>
 <DAT name="UISOBJID">F</DAT>

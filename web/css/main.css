@@ -46,3 +46,35 @@ a.navbar-brand img { height: 48px; width: 56px; }
 .pad-top {
   margin-top: 10px;
 }
+@media only screen and (max-width: 768px) {
+	.mid-view {
+		display:none;
+	}
+}
+@media only screen and (max-width: 1280px) {
+	.full-view {
+		display:none;
+	}
+}
+div#map {
+    width: 340px;
+    height: 340px;
+    margin: 0;
+    padding: 0;
+}
+div#geosearch {
+  background-color: white;
+  position: absolute;
+  width: auto;
+  height: auto;
+  padding: 10px;
+  z-index:1000;
+}
+div#geosearch input {
+  width: 240px;
+}
+div#georesults {
+  font-style: sans-serif;
+  color: black;
+  font-size: 75%;
+}

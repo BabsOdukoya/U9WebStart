@@ -51,15 +51,19 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2016-07-19T11:11:35.00</DAT>
+<DAT name="UTIMESTAMP">2017-06-05T09:21:51.00</DAT>
 <DAT name="USUB">I</DAT>
 <DAT name="UVAR">SYSTEM_LIBRARY</DAT>
 <DAT name="ULABEL">ERRF_KEY</DAT>
 <DAT name="ULAN">P</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Populate technical key</DAT>
-<DAT name="UTEXT" xml:space='preserve'>; if Key not complete, populate from UUID
+<DAT name="UTEXT" xml:space='preserve'>; if Key not complete, populate from keymanager
+variables
+	numeric vStatus
+	string  vMessage
+endvariables
 if ($error = 0129 | $error = 2206)
-	&lt;$fieldname&gt;.&lt;$entname&gt; = $replace($uuid, 1, "_", "", -1)
+	activate "SYS_KEYMANAGER".GetID(&lt;$entname&gt;, &lt;$fieldname&gt;.&lt;$entname&gt;, vStatus, vMessage)
 endif
 </DAT>
 </OCC>

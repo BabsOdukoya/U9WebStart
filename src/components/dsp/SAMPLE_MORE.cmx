@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-06T14:43:43.00</DAT>
-<DAT name="UCOMPSTAMP">2017-03-06T14:43:43.00</DAT>
+<DAT name="UTIMESTAMP">2017-05-26T16:10:37.00</DAT>
+<DAT name="UCOMPSTAMP">2017-06-12T10:18:51.00</DAT>
 <DAT name="ULABEL">SAMPLE_MORE</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Modal More Dialog</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -203,25 +203,33 @@
 
 #Comment ----------------------------------------------
 </DAT>
-<DAT name="INIT" xml:space='preserve'>public web
-return 0
+<DAT name="INIT" xml:space='preserve'>;public web
+;return 0
 </DAT>
 <DAT name="GENERAL" xml:space='preserve'>#include App:dspLocalProcs</DAT>
 <DAT name="FORMPIC" xml:space='preserve'>
- &uFRM;TYP=E&uSEP;NAM=DUMMY.DUMMY&uSEP;WID=25&uSEP;HEI=3&uSEP;HOC=25&uSEP;VOC=3&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=PARAMS&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
-<DAT name="SFUNC" xml:space='preserve'>;----------------------------------------------------------------------
-operation create
-;----------------------------------------------------------------------
-public web
+ &uFRM;TYP=E&uSEP;NAM=DUMMY.DUMMY&uSEP;WID=45&uSEP;HEI=3&uSEP;HOC=45&uSEP;VOC=3&uFRM;
+  &uFRM;TYP=L&uSEP;NAM=EMAIL.DUMMY&uSEP;WID=20&uSEP;HEI=1&uSEP;LAB=E-mail&uFRM;&uFRM;TYP=F&uSEP;NAM=EMAIL&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
+<DAT name="SFUNC" xml:space='preserve'>#define SETUP
+;----------------------------------------------------------------
+; Run every time form is shown
+;----------------------------------------------------------------
+operation setup
+;----------------------------------------------------------------
 params
-	String pOptions : IN
+	Struct pOptions : IN
 endparams
 
-	PARAMS.DUMMY = pOptions
+;variables
+;	String vId
+;endvariables
+
+	;Extract the ID if it has been passed in
+	EMAIL.DUMMY  = pOptions-&gt;"param"
+	
 	return 0
 
-end ;create
+end ;setup
 
 
 #include App:dspOperations
@@ -241,15 +249,9 @@ end ;create
 	&lt;form class="form-horizontal" id="uent:DUMMY.DUMMY"&gt;
 		&lt;div id="uocc:DUMMY.DUMMY"&gt;
 			&lt;div class="form-group"&gt;
-				&lt;label class="col-xs-2 control-label" id="lbl3"&gt;Parameters&lt;/label&gt;
+				&lt;label class="col-xs-2 control-label" id="ulbl:EMAIL.DUMMY.DUMMY"&gt;Label&lt;/label&gt;
 				&lt;div class="col-xs-10"&gt;
-					&lt;p class="form-control-static"&gt;&lt;span id="ufld:PARAMS.DUMMY.DUMMY"&gt;&lt;/span&gt;&lt;/p&gt;
-				&lt;/div&gt;
-			&lt;/div&gt;
-			&lt;div class="form-group"&gt;
-				&lt;label class="col-xs-2 control-label" id="lbl1"&gt;E-mail&lt;/label&gt;
-				&lt;div class="col-xs-10"&gt;
-					&lt;input class="form-control" value=""/&gt;
+					&lt;input class="form-control" id="ufld:EMAIL.DUMMY.DUMMY" value=""/&gt;
 					&lt;span class="help-block"&gt;E-mail address used for sign in&lt;/span&gt;
 				&lt;/div&gt;
 			&lt;/div&gt;
@@ -647,6 +649,22 @@ activate "&lt;MAIN_DSP&gt;".showWarning("Warning", "Sample warning message")
 <DAT name="UISOBJID">F</DAT>
 <DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
 <DAT name="WEBWIDGETTYPE">COMMANDBUTTON</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-05-26T16:08:15.00</DAT>
+<DAT name="ULABEL">EMAIL</DAT>
+<DAT name="GRP">DUMMY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">SAMPLE_MORE</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="SYNTAXMOD">NED</DAT>
+<DAT name="INTERFACEMOD">VC*</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
 </OCC>
 <OCC>
 <DAT name="UTIMESTAMP">2017-01-31T14:54:45.00</DAT>

@@ -49,11 +49,20 @@ app.ui = {
   },
   
   modalHide: function() {
-  		$('#modal').modal('hide');
+  	$('#modal').modal('hide');
   },
   
   modalShow: function() {
   	$('#modal').modal('show');
+  },
+  
+  getPlatform: function() {
+  	if (typeof device !== 'undefined') {
+		return device.platform;
+	} else {
+		return 'browser';
+	}
+
   }
   
 };

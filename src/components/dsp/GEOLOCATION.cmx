@@ -167,10 +167,10 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-05-12T15:39:10.00</DAT>
-<DAT name="UCOMPSTAMP">2017-06-12T10:18:50.00</DAT>
-<DAT name="ULABEL">BOOTMAIN</DAT>
-<DAT name="UDESCR" xml:space='preserve'>Bootstrap Starter Main</DAT>
+<DAT name="UTIMESTAMP">2017-06-01T14:14:08.00</DAT>
+<DAT name="UCOMPSTAMP">2017-06-12T10:18:51.00</DAT>
+<DAT name="ULABEL">GEOLOCATION</DAT>
+<DAT name="UDESCR" xml:space='preserve'>OpenStreetMap Integration</DAT>
 <DAT name="WVPOS">3</DAT>
 <DAT name="WHPOS">1</DAT>
 <DAT name="WVSIZ">35</DAT>
@@ -204,28 +204,8 @@
 #Comment ----------------------------------------------
 </DAT>
 <DAT name="INIT" xml:space='preserve'>public web
-variables
-	string vSessionAttributes
-	string vUserName
-endvariables
-;Check the session attributes for a user name. A user name logged against the
-;session indicates that the user is logged in.
-vSessionAttributes = $item("SESSIONATTRIBUTES", $webinfo("webservercontext"))
-vUserName = $item("UserName", vSessionAttributes)
 
-if(vUserName == "")
-	;If the user isn't logged in then show the login page
-	$instancehandle-&gt;showLogin()
-else
-	;If the user is logged in then show the main application
-	;$instancehandle-&gt;showApplication(vResource, vAction, vParam)
-	$instancehandle-&gt;showApplication()
-endif
-
-;Assigned as initial value
-;MODAL.FORM = lpGetDsp("&lt;MODAL_DSP&gt;", "", "", "")
-return (0)
-</DAT>
+webactivate $instancename.setupJS()</DAT>
 <DAT name="CLEAR">clear</DAT>
 <DAT name="RETRIEVE" xml:space='preserve'>retrieve
 if ($status &lt; 0)
@@ -267,311 +247,243 @@ else
    endif
 endif
 </DAT>
-<DAT name="GENERAL" xml:space='preserve'>#include APP:DSPLOCALPROCS
-</DAT>
 <DAT name="FORMPIC" xml:space='preserve'>
- &uFRM;TYP=E&uSEP;NAM=FORM.UI&uSEP;WID=25&uSEP;HEI=4&uSEP;HOC=25&uSEP;VOC=4&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=CONTAINER&uSEP;WID=20&uSEP;HEI=1&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=MODAL&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
-<DAT name="TITLE" xml:space='preserve'>Bootstrap 3 Starter</DAT>
-<DAT name="SFUNC" xml:space='preserve'>#include U:zProcError  ; Report an unexpected failure in a proc statement.
-
-;---------------------------------------------------------
-operation showLogin
-;---------------------------------------------------------
-public web
-
-	CONTAINER.FORM = lpGetDsp("BOOTLOGIN", "", "", "")
-	return 0
-
-end ; showLogin
-
-;---------------------------------------------------------
-operation showRegister
-;---------------------------------------------------------
-public web
-scope
-	input
-	output
-	operation &lt;ALERT_DSP&gt;.clearMessage
-endscope
-
-	activate "&lt;ALERT_DSP&gt;".clearMessage()
-	CONTAINER.FORM = lpGetDsp("APP_USER_DETAIL", "", "MODE=REGISTER", "")
-	return 0
-
-end ; showRegister
-
-;---------------------------------------------------------
-operation showApplication
-;---------------------------------------------------------
-public web
-scope
-	input
-	output
-	operation &lt;ALERT_DSP&gt;.clearMessage
-endscope
-
-	activate "&lt;ALERT_DSP&gt;".clearMessage()
-	; Load Navigation component into DSP container
-	; The navigation component will load display forms in it's own container
-
-	;CONTAINER.FORM = "&lt;NAV_DSP&gt;"
-	CONTAINER.FORM = lpGetDsp("&lt;NAV_DSP&gt;", "", "", "")
-	return 0
-
-end ;showApplication
-
-;---------------------------------------------------------
-operation logOff
-;---------------------------------------------------------
-public web
-
-	; Close the current session
-	putitem/id $webinfo("SESSIONCOMMANDS"), "ChangeSession", "CLOSE"
-
-	;Perform a full page refresh to reset absolutely everything. Tidying everything up manually would
-	;arguably be more efficient, but this is more maintainable.
-	webactivate $instancename.fullPageRefresh()
-
-	return 0
-
-end ;logOff
-
-
-;---------------------------------------------------------
-; Perform a full page refresh which will cause
-; this page to be fully reloaded and all state held in the
-; browser (values, DSP instances etc) to be lost.
-;---------------------------------------------------------
-weboperation fullPageRefresh
-;---------------------------------------------------------
+ &uFRM;TYP=E&uSEP;NAM=DUMMY.DUMMY&uSEP;WID=25&uSEP;HEI=6&uSEP;HOC=25&uSEP;VOC=6&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=ADDR&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=LAT&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=LNG&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=GO&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
+<DAT name="SFUNC" xml:space='preserve'>;--------------------------------------------------------------------
+; See Defines trigger for pre-compiler definition of MAP_ELEMENT_ID
+;--------------------------------------------------------------------
+weboperation showMap
 javascript
-
-	location.reload();
-
 endjavascript
-end ;fullPageRefresh
+end ; showMap
 
+;// See gmap.js for ifmap Google Maps interface code
+;#IF (&lt;MAP_ELEMENT_ID&gt;!=mapid)
+;	gmap.setMapElementID("&lt;MAP_ELEMENT_ID&gt;");
+;#ENDIF
+;	gmap.setup(lat, lng, zoom);
 
-;---------------------------------------------------------
-; Return translated text for Javascript operations
-;---------------------------------------------------------
-operation getText
-;---------------------------------------------------------
-public web
-params
-	string pID      : IN
-	string pMessage : INOUT
-endparams
-
-	if ($textexist("%%pID%%%"))
-		pMessage = $text("%%pID%%%")
-	else
-		pMessage = ""
-	endif
-
-end ; getText
+#define SETUP_JS
+weboperation setupJS
+javascript
+	//Workaround for display problem
+	/* Uniface HQ Amsterdam */
+	var lat = 52.3109391;
+	var lng = 4.944619699999976;
+	var zoom = 3;
+	lmap.loadMap("&lt;MAP_ELEMENT_ID&gt;", lat, lng, zoom);
+	if (navigator.geolocation) {
+		$('#geobtn').prop('disabled', false);
+	} else {
+		$('#geobtn').prop('disabled', true);
+	}
+endjavascript
+end ; setupJS
 </DAT>
 <DAT name="HTMLPROP">EDITOR=TEXT</DAT>
 <DAT name="USCONTAINED">1</DAT>
-<DAT name="GETSTATE" xml:space='preserve'>variables
-  string  WebServerContext, Cookie, Session, UserContext, sOuter
-  numeric i
-endvariables
-
-; =======================================================================================
+<DAT name="GETSTATE" xml:space='preserve'>#include APP:GETSTATE
+;variables
+;  string  WebServerContext, Cookie, Session, UserContext, sOuter
+;  numeric i
+;endvariables
+;
+;; =======================================================================================
 ; Get state
 ; ----------------------------------------------
-; The constants noState, byCookie and byStateManagerComponent are assumed to be defined in the Component Defines Trigger.
-#if ("&lt;$cmpStateManagedBy&gt;" = "&lt;noState&gt;")
-  ; Insert your code...
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byCookie&gt;")
-  getitem/id Cookie, $webinfo("COOKIESIN"), "MY_VARLIST_COOKIE"
-  getlistitems/id /component Cookie
-  ; Insert your code...
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byStateManagerComponent&gt;")
-  WebServerContext = $webinfo("WEBSERVERCONTEXT")
-  getitem/id Session, WebServerContext, "SESSION"
-  UserContext = ""
-  activate "USYSSTAT".GetState(Session, $instancename, UserContext)
-  getlistitems/id /component UserContext
-  ; Insert your code...
-#endif ; &lt;$cmpStateManagedBy&gt;
-
-; When using the State Manager Component:
-; Use the following activates to delete an occurrence in your state table or cleanup your state table (USTATE.STATE).
+;; The constants noState, byCookie and byStateManagerComponent are assumed to be defined in the Component Defines Trigger.
+;#if ("&lt;$cmpStateManagedBy&gt;" = "&lt;noState&gt;")
+;  ; Insert your code...
+;#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byCookie&gt;")
+;  getitem/id Cookie, $webinfo("COOKIESIN"), "MY_VARLIST_COOKIE"
+;  getlistitems/id /component Cookie
+;  ; Insert your code...
+;#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byStateManagerComponent&gt;")
+;  WebServerContext = $webinfo("WEBSERVERCONTEXT")
+;  getitem/id Session, WebServerContext, "SESSION"
+;  UserContext = ""
+;  activate "USYSSTAT".GetState(Session, $instancename, UserContext)
+;  getlistitems/id /component UserContext
+;  ; Insert your code...
+;#endif ; &lt;$cmpStateManagedBy&gt;
 ;
-;   activate "USYSSTAT".DELETESTATE(SessionId, $instancename)
-;   operation DELETESTATE
-;   params
-;      string SessionId    : IN
-;      string InstanceName : IN
-;   endparams
+;; When using the State Manager Component:
+;; Use the following activates to delete an occurrence in your state table or cleanup your state table (USTATE.STATE).
+;;
+;;   activate "USYSSTAT".DELETESTATE(SessionId, $instancename)
+;;   operation DELETESTATE
+;;   params
+;;      string SessionId    : IN
+;;      string InstanceName : IN
+;;   endparams
+;;
+;;   activate "USYSSTAT".CLEANUPSTATE(TimeStamp)
+;;   operation CLEANUPSTATE
+;;   params
+;;      datetime TimeStamp   : IN
+;;   endparams
+;;   When TimeStamp = '0' or 'empty' all occurrences will be removed.
+;;   When you specify a particular 'datetime' all occurrences before 'datetime' will 
+;;   be removed.
+;; =======================================================================================
 ;
-;   activate "USYSSTAT".CLEANUPSTATE(TimeStamp)
-;   operation CLEANUPSTATE
-;   params
-;      datetime TimeStamp   : IN
-;   endparams
-;   When TimeStamp = '0' or 'empty' all occurrences will be removed.
-;   When you specify a particular 'datetime' all occurrences before 'datetime' will
-;   be removed.
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Parse request
-; ----------------------------------------------
-selectcase $webrequesttype
-case "DYNAMIC"
-  webload                         ; Get Data
-  if ($procerror &lt; 0)
-    $webinfo("OUTPUT") = lfHtmlMessage("WEBLOAD Failed", $procerrorcontext)
-    return -1
-  endif
-
-  i = 1
-  getitem sOuter, $componentinfo($instancename, "OUTERENTITIES"), i
-  while ($status &gt; 0)
-    reconnect "%%sOuter%%%"    ; Reconnect Data
-    if ($procerror &lt; 0)
-      $webinfo("OUTPUT") = lfHtmlMessage("RECONNECT Failed", $procerrorcontext)
-      return -1
-    elseif ($status != 0)
-      $webinfo("OUTPUT") = lfHtmlMessage("RECONNECT Failed", "$status=%%$status%%%&uSEP;ENTITY=%%sOuter%%%")
-      return -1
-    endif
-    i = i + 1
-    getitem sOuter, $componentinfo($instancename, "OUTERENTITIES"), i
-  endwhile
-
-  websetocc                       ; Set Occurrence Context
-  if ($procerror &lt; 0)
-    $webinfo("OUTPUT") = lfHtmlMessage("WEBSETOCC Failed", $procerrorcontext)
-    return -1
-  endif
-endselectcase
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Execution ok
-; ----------------------------------------------
-return (0)
-; =======================================================================================
-
-
-; Error page
-entry lfHtmlMessage
-returns string
-params
-  string pHeader      : IN
-  string pContextList : IN
-endparams
-variables
-  string vMessage, VadditionalList
-endvariables
-  vMessage = $replace($htmlmessage, 1, "__HEADER__", pHeader)
-  VadditionalList = $item("ADDITIONAL", pContextList)
-  delitem/id pContextList, "ADDITIONAL"
-  pContextList = $concat(pContextList, "&uSEP;&uSEP;Additional:&uSEP;", VadditionalList)
-  pContextList = $replace(pContextList, 1, "COMPONENT", "DSP_INSTANCE=%%$instancename%%%&uSEP;COMPONENT")
-  vMessage = $replace(vMessage, 1, "__MESSAGE__", $replace(pContextList, 1, "&uSEP;", "&lt;br /&gt;", -1))
-;   vMessage = $concat(vMessage, "&lt;br/ &gt;Additional:&lt;br /&gt;", $replace(vAdditional, 1, "&uSEP;", "&lt;br /&gt;", -1))
-  return vMessage
-
-htmlmessage:blockdata ~
-&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
- &lt;head&gt;
-  &lt;meta name="Default" content="Uniface 9" /&gt;
-  &lt;link rel="stylesheet" type="text/css" href="../css/udsp.css" /&gt;
-  &lt;title&gt;title&lt;/title&gt;
- &lt;/head&gt;
- &lt;body style="color: rgb(0, 0, 0); background-color: orange;" alink="#000099" link="#000099" vlink="#990099"&gt;
-  &lt;span style="font-weight: bold;"&gt;__HEADER__&lt;/span&gt;&lt;br /&gt;
-  &lt;hr style="width: 100%; height: 2px;" /&gt;
-  __MESSAGE__&lt;br /&gt;
- &lt;/body&gt;
-&lt;/html&gt;
-~
-
-end
-</DAT>
-<DAT name="SETSTATE" xml:space='preserve'>variables
-  string WebServerCntxt, SessionId, Varlist
-endvariables
-
-; =======================================================================================
-; Generate response
-; ----------------------------------------------
-selectcase $webresponsetype
-case "UPDATE"         ; Update page
-  websave               ; Generate data
-  if ($procerror &lt; 0)
-    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
-    return (0)
-  endif
-case "FULLPAGE"       ; Initial page
-  weblayout             ; Generate layout
-  if ($procerror &lt; 0)
-    webmessage/error "weblayout failed (Set State)%%^$procerror = %%$procerror%%%"
-    return ($status)
-  endif
-
-  webdefinitions        ; Generate component definitions
-  if ($procerror &lt; 0)
-    webmessage/error "webdefinitions failed (Set State)%%^$procerror = %%$procerror%%%"
-    return ($status)
-  endif
-
-  websave               ; Generate data
-  if ($procerror &lt; 0)
-    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
-    return (0)
-  endif
-endselectcase
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Set state
-; ----------------------------------------------
-; The constants noState, byCookie and byStateManagerComponent are assumed
-; to be defined in the Component Defines Trigger.
-#if ("&lt;$cmpStateManagedBy&gt;" = "&lt;noState&gt;")
-  ; Insert your code...
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byCookie&gt;")
-  ; Initialize Varlist with all component variables.
-  Varlist = $componentinfo($instancename, "VARIABLES")
-  ; Add the current values of the component variables to Varlist.
-  putlistitems/id /component Varlist
-  ; Insert your code...
-  putitem/id $webinfo("COOKIESOUT"), "MY_VARLIST_COOKIE", Varlist
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byStateManagerComponent&gt;")
-  WebServerCntxt = $webinfo("WEBSERVERCONTEXT")
-  getitem/id SessionId, WebServerCntxt, "SESSION"
-  ; Initialize Varlist with all component variables.
-  Varlist = $componentinfo($instancename, "VARIABLES")
-  ; Add the current values of the component variables to Varlist.
-  putlistitems/id /component Varlist
-  ; Insert your code...
-  activate "USYSSTAT".SetState(SessionId, $instancename, Varlist)
-#endif
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Execution ok
-; ----------------------------------------------
-return (0)
-; =======================================================================================
-</DAT>
+;
+;
+;; =======================================================================================
+;; Parse request
+;; ----------------------------------------------
+;selectcase $webrequesttype
+;case "DYNAMIC"
+;  webload                         ; Get Data
+;  if ($procerror &lt; 0)
+;    $webinfo("OUTPUT") = lfHtmlMessage("WEBLOAD Failed", $procerrorcontext)
+;    return -1
+;  endif
+;
+;  i = 1
+;  getitem sOuter, $componentinfo($instancename, "OUTERENTITIES"), i
+;  while ($status &gt; 0)
+;    reconnect "%%sOuter%%%"    ; Reconnect Data
+;    if ($procerror &lt; 0)
+;      $webinfo("OUTPUT") = lfHtmlMessage("RECONNECT Failed", $procerrorcontext)
+;      return -1
+;    elseif ($status != 0)
+;      $webinfo("OUTPUT") = lfHtmlMessage("RECONNECT Failed", "$status=%%$status%%%&uSEP;ENTITY=%%sOuter%%%")
+;      return -1
+;    endif
+;    i = i + 1
+;    getitem sOuter, $componentinfo($instancename, "OUTERENTITIES"), i
+;  endwhile
+;
+;  websetocc                       ; Set Occurrence Context
+;  if ($procerror &lt; 0)
+;    $webinfo("OUTPUT") = lfHtmlMessage("WEBSETOCC Failed", $procerrorcontext)
+;    return -1
+;  endif
+;endselectcase
+;; =======================================================================================
+;
+;
+;
+;; =======================================================================================
+;; Execution ok
+;; ----------------------------------------------
+;return (0)
+;; =======================================================================================
+;
+;
+;; Error page
+;entry lfHtmlMessage
+;returns string
+;params
+;  string pHeader      : IN
+;  string pContextList : IN
+;endparams
+;variables
+;  string vMessage, VadditionalList
+;endvariables
+;  vMessage = $replace($htmlmessage, 1, "__HEADER__", pHeader)
+;  VadditionalList = $item("ADDITIONAL", pContextList)
+;  delitem/id pContextList, "ADDITIONAL"
+;  pContextList = $concat(pContextList, "&uSEP;&uSEP;Additional:&uSEP;", VadditionalList)
+;  pContextList = $replace(pContextList, 1, "COMPONENT", "DSP_INSTANCE=%%$instancename%%%&uSEP;COMPONENT")
+;  vMessage = $replace(vMessage, 1, "__MESSAGE__", $replace(pContextList, 1, "&uSEP;", "&lt;br /&gt;", -1))
+;;   vMessage = $concat(vMessage, "&lt;br/ &gt;Additional:&lt;br /&gt;", $replace(vAdditional, 1, "&uSEP;", "&lt;br /&gt;", -1))
+;  return vMessage
+;
+;htmlmessage:blockdata ~
+;&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+;&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+;&lt;head&gt;
+;  &lt;meta name="Default" content="Uniface 9" /&gt;
+;  &lt;link rel="stylesheet" type="text/css" href="../css/udsp.css" /&gt;
+;&lt;/head&gt;
+;&lt;body style="color: rgb(0, 0, 0); background-color: orange;" alink="#000099" link="#000099" vlink="#990099"&gt;
+;  &lt;span style="font-weight: bold;"&gt;__HEADER__&lt;/span&gt;&lt;br /&gt;
+;  &lt;hr style="width: 100%; height: 2px;" /&gt;
+;  __MESSAGE__&lt;br /&gt;
+;&lt;/body&gt;
+;&lt;/html&gt;
+;~
+;
+;end
+;</DAT>
+<DAT name="SETSTATE" xml:space='preserve'>#include APP:SETSTATE
+;variables
+;  string WebServerCntxt, SessionId, Varlist
+;endvariables
+;
+;; =======================================================================================
+;; Generate response
+;; ----------------------------------------------
+;selectcase $webresponsetype
+;case "UPDATE"         ; Update page
+;  websave               ; Generate data
+;  if ($procerror &lt; 0)
+;    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
+;    return (0)
+;  endif
+;case "FULLPAGE"       ; Initial page
+;  weblayout             ; Generate layout
+;  if ($procerror &lt; 0)
+;    webmessage/error "weblayout failed (Set State)%%^$procerror = %%$procerror%%%"
+;    return ($status)
+;  endif
+;
+;  webdefinitions        ; Generate component definitions
+;  if ($procerror &lt; 0)
+;    webmessage/error "webdefinitions failed (Set State)%%^$procerror = %%$procerror%%%"
+;    return ($status)
+;  endif
+;
+;  websave               ; Generate data
+;  if ($procerror &lt; 0)
+;    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
+;    return (0)
+;  endif
+;endselectcase
+;; =======================================================================================
+;
+;
+;
+;; =======================================================================================
+;; Set state
+;; ----------------------------------------------
+;; The constants noState, byCookie and byStateManagerComponent are assumed
+;; to be defined in the Component Defines Trigger.
+;#if ("&lt;$cmpStateManagedBy&gt;" = "&lt;noState&gt;")
+;  ; Insert your code...
+;#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byCookie&gt;")
+;  ; Initialize Varlist with all component variables.
+;  Varlist = $componentinfo($instancename, "VARIABLES")
+;  ; Add the current values of the component variables to Varlist.
+;  putlistitems/id /component Varlist
+;  ; Insert your code...
+;  putitem/id $webinfo("COOKIESOUT"), "MY_VARLIST_COOKIE", Varlist
+;#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byStateManagerComponent&gt;")
+;  WebServerCntxt = $webinfo("WEBSERVERCONTEXT")
+;  getitem/id SessionId, WebServerCntxt, "SESSION"
+;  ; Initialize Varlist with all component variables.
+;  Varlist = $componentinfo($instancename, "VARIABLES")
+;  ; Add the current values of the component variables to Varlist.
+;  putlistitems/id /component Varlist
+;  ; Insert your code...
+;  activate "USYSSTAT".SetState(SessionId, $instancename, Varlist)
+;#endif
+;; =======================================================================================
+;
+;
+;
+;; =======================================================================================
+;; Execution ok
+;; ----------------------------------------------
+;return (0)
+;; =======================================================================================
+;</DAT>
 <DAT name="TPLACTUAL2" xml:space='preserve'>#comment The pre-defined constant $cmpStateManagedBy represents the component property 'State Managed By'.
 #comment See GetState and SetState triggers for usage.
 #comment It has one of the following values:
@@ -580,38 +492,55 @@ return (0)
 #define  byCookie                = 1
 #define  byStateManagerComponent = 2
 
-#include APP:DSPDEFINES
+;Dynamically inject Javascript
+;#define PAGE_CSS "https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"&uSEP;"../css/main.css"
+#define PAGE_CSS "https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+;#define PAGE_JS "https://maps.googleapis.com/maps/api/js?key=&lt;GOOGLE_API_KEY&gt;"&uSEP;"../js/gmap.js"
+#define PAGE_JS "https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"&uSEP;"../js/lmap.js"
+#define MAP_ELEMENT_ID map
 </DAT>
 <DAT name="USTATEMANAGEDBY">0</DAT>
 <DAT name="HTMLSKELETON" xml:space='preserve'>&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="utf-8" /&gt;
-  &lt;meta http-equiv="X-UA-Compatible" content="IE=edge" /&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
-
-  &lt;!--link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"--&gt;
-
-  &lt;link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" /&gt;
-  &lt;link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" /&gt;
-  &lt;link href="../css/main.css" rel="stylesheet" /&gt;
-
-  &lt;script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"&gt;&lt;/script&gt;
-  &lt;script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"&gt;&lt;/script&gt;
-  &lt;script src="../js/main.js"&gt;&lt;/script&gt;
-  &lt;script src="../js/ui.js"&gt;&lt;/script&gt;
-  &lt;title&gt;Responsive Starter&lt;/title&gt;
-&lt;/head&gt;
-&lt;body class="bootstrap"&gt;
-
-  &lt;div class="container-fluid"&gt;
-	&lt;div id="ufld:CONTAINER.FORM.UI"&gt;DspContainer&lt;/div&gt;
-     &lt;div id="ufld:MODAL.FORM.UI"&gt;DspContainer&lt;/div&gt;
-  &lt;/div&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;
-</DAT>
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" /&gt;
+    &lt;link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" /&gt;
+    &lt;!-- Note: resources will be loaded from the main page, or injected in state triggers (see defines trigger) --&gt;
+    &lt;link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+       integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+       crossorigin=""/&gt;
+    &lt;link rel="stylesheet" href="../css/main.css"&gt;
+    &lt;script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"&gt;&lt;/script&gt;
+    &lt;!-- Leaflet resources --&gt;
+    &lt;script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"&gt;&lt;/script&gt;
+    &lt;!-- Custom OSM integration code --&gt;
+    &lt;script src="../js/lmap.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;!--
+    &lt;div id="controls"&gt;
+      &lt;label&gt;Address&lt;/label&gt;
+      &lt;input id="ufld:ADDR.DUMMY.DUMMY" value="Input Element" style="width:80%" /&gt;
+      &lt;input type="button" id="ufld:GO.DUMMY.DUMMY" value="Button"/&gt;
+    &lt;/div&gt;
+    --&gt;
+    &lt;div id="nogeo" class="hidden"&gt;
+      &lt;br&gt;
+      &lt;div class="panel panel-danger"&gt;
+        &lt;div class="panel-heading"&gt;Location unavailable&lt;/div&gt;
+        &lt;div class="panel-body"&gt;Your device does not currently support location services&lt;/div&gt;
+	  &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div id="map"&gt;&lt;/div&gt;
+    &lt;div id="geosearch"&gt;
+      &lt;input type="text" name="addr" value="" id="addr" size="10" /&gt;
+      &lt;button type="button" onclick="lmap.mapSearch('addr');"&gt;&lt;span class="fa fa-fw fa-search"&gt;&lt;/span&gt;&lt;/button&gt;
+	  &lt;button type="button" onclick="lmap.geoLocate('nogeo','map');" id="geobtn"&gt;&lt;span class="fa fa-fw fa-map-marker"&gt;&lt;/span&gt;&lt;/button&gt;
+      &lt;button type="button" onclick="lmap.hideResults();" id="hidebtn" class="pull-right hidden"&gt;&lt;span class="fa fa-fw fa-times"&gt;&lt;/span&gt;&lt;/button&gt;
+      &lt;div id="georesults"/&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</DAT>
 </OCC>
 </TABLE>
 <TABLE>
@@ -757,10 +686,10 @@ return (0)
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F3,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-09T17:55:13.00</DAT>
-<DAT name="ULABEL">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTMAIN</DAT>
+<DAT name="UTIMESTAMP">2017-05-31T13:44:18.00</DAT>
+<DAT name="ULABEL">DUMMY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">GEOLOCATION</DAT>
 <DAT name="U_BORD">N</DAT>
 <DAT name="U_DBMS">XXX</DAT>
 <DAT name="U_UPD">Y</DAT>
@@ -897,87 +826,91 @@ return (0)
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\E6,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-09T20:20:52.00</DAT>
-<DAT name="ULABEL">ALERT</DAT>
-<DAT name="GRP">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTMAIN</DAT>
+<DAT name="UTIMESTAMP">2017-05-31T13:44:18.00</DAT>
+<DAT name="ULABEL">ADDR</DAT>
+<DAT name="GRP">DUMMY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">GEOLOCATION</DAT>
 <DAT name="U_DTYP">S</DAT>
 <DAT name="U_INDB">N</DAT>
-<DAT name="INTERFACEMOD">VC40</DAT>
+<DAT name="INTERFACEMOD">VC*</DAT>
 <DAT name="WIDGETTYPE">EDITBOX</DAT>
 <DAT name="UINHERIT">F</DAT>
-<DAT name="INITVALUE">BOOTALERT</DAT>
+<DAT name="INITVALUE" xml:space='preserve'>Uniface, Hoogoorddreef 60, 1101 BE Amsterdam-Zuidoost, Netherlands</DAT>
 <DAT name="UISOBJID">F</DAT>
 <DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
-<DAT name="WEBWIDGETTYPE">DSPCONTAINER</DAT>
+<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
 </OCC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-09T17:55:13.00</DAT>
-<DAT name="ULABEL">CONTAINER</DAT>
-<DAT name="GRP">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTMAIN</DAT>
+<DAT name="UTIMESTAMP">2017-05-31T13:44:18.00</DAT>
+<DAT name="ULABEL">GO</DAT>
+<DAT name="GRP">DUMMY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">GEOLOCATION</DAT>
 <DAT name="U_DTYP">S</DAT>
 <DAT name="U_INDB">N</DAT>
-<DAT name="INTERFACEMOD">VC40</DAT>
+<DAT name="INTERFACEMOD">C*</DAT>
 <DAT name="WIDGETTYPE">EDITBOX</DAT>
 <DAT name="UINHERIT">F</DAT>
+<DAT name="DETAIL" xml:space='preserve'>webtrigger
+
+javascript
+
+	var addr = this.getParent().getField("ADDR").getValue();
+	//call Nominatim REST Service to convert address to lat/long - see osm.js
+	lmap.addrSearch(addr);
+
+endjavascript
+</DAT>
+<DAT name="INITVALUE">Go</DAT>
 <DAT name="UISOBJID">F</DAT>
 <DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
-<DAT name="WEBWIDGETTYPE">DSPCONTAINER</DAT>
+<DAT name="WEBWIDGETTYPE">COMMANDBUTTON</DAT>
 </OCC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-06T15:01:59.00</DAT>
-<DAT name="ULABEL">MODAL</DAT>
-<DAT name="GRP">FORM</DAT>
-<DAT name="UBASE">UI</DAT>
-<DAT name="UFORM">BOOTMAIN</DAT>
+<DAT name="UTIMESTAMP">2017-05-31T13:44:18.00</DAT>
+<DAT name="ULABEL">LAT</DAT>
+<DAT name="GRP">DUMMY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">GEOLOCATION</DAT>
 <DAT name="U_DTYP">S</DAT>
 <DAT name="U_INDB">N</DAT>
-<DAT name="INTERFACEMOD">VC40</DAT>
+<DAT name="INTERFACEMOD">C*</DAT>
 <DAT name="WIDGETTYPE">EDITBOX</DAT>
 <DAT name="UINHERIT">F</DAT>
-<DAT name="INITVALUE">BOOTMODAL</DAT>
 <DAT name="UISOBJID">F</DAT>
 <DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
-<DAT name="WEBWIDGETTYPE">DSPCONTAINER</DAT>
+<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
 </OCC>
-</TABLE>
-<TABLE>
-<DSC name="UXREGS" model="DICT" system="S" pseudo ="73" level="1" noupdate="0"
- rbk="0" ffsql="0" transnr="0" segsize="0" ufocc="0" charset=".U">
-<FLD name="UTIMESTAMP" seqno="1" type="E" level="2" pack="0" scale="0" length="15"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_STAT" seqno="2" type="S" level="2" pack="0" scale="0" length="4"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_TYPE" seqno="3" type="S" level="2" pack="0" scale="0" length="2"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_FORMLIB" seqno="4" type="S" level="2" pack="0" scale="0" length="16"
- pointer="0" inum="2" ufocc="0" mandatory="yes" idxnum="1,3" idxsnr="101,1" />
-<FLD name="U_NAME" seqno="5" type="S" level="2" pack="0" scale="0" length="32"
- pointer="0" inum="2" ufocc="0" mandatory="yes" idxnum="1,2" idxsnr="102,1" />
-<FLD name="UVERS" seqno="6" type="S" level="2" pack="0" scale="0" length="12"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="UDESCR" seqno="7" type="S" level="2" pack="0" scale="0" length="25"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_DTYP" seqno="8" type="S" level="2" pack="0" scale="0" length="2"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_LAYOUT" seqno="9" type="S" level="2" pack="0" scale="0" length="46"
- pointer="0" inum="0" ufocc="0" />
-<FLD name="U_DOC" seqno="10" type="S" level="2" pack="141" scale="0" length="0"
- pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C1,0,0,0,,0,0,0,," />
-<FLD name="USCOPE" seqno="11" type="S" level="2" pack="141" scale="0" length="0"
- pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C2,0,0,0,,0,0,0,," />
-<FLD name="UHINTERFACE" seqno="12" type="S" level="2" pack="141" scale="0" length="0"
- pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C3,0,0,0,,0,0,0,," />
-</DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-09T17:55:13.00</DAT>
-<DAT name="U_FORMLIB">BOOTMAIN</DAT>
-<DAT name="U_NAME">BREADCRUMB_CUR</DAT>
-<DAT name="UDESCR" xml:space='preserve'>Current Breadcrumb Occ</DAT>
-<DAT name="U_DTYP">N</DAT>
+<DAT name="UTIMESTAMP">2017-05-31T13:44:18.00</DAT>
+<DAT name="ULABEL">LNG</DAT>
+<DAT name="GRP">DUMMY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">GEOLOCATION</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">C*</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-05-31T13:44:18.00</DAT>
+<DAT name="ULABEL">LON</DAT>
+<DAT name="GRP">DUMMY</DAT>
+<DAT name="UBASE">DUMMY</DAT>
+<DAT name="UFORM">GEOLOCATION</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">C*</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
 </OCC>
 </TABLE>
 </UNIFACE>

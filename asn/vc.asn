@@ -1,3 +1,9 @@
+[RESOURCES]
+;\\vmware-host\Shared Folders\Projects\Uniface\9.7\Development-Tooling\uniface-version-control\build\VersionControl.uar
+;\\vmware-host\Shared Folders\Projects\Uniface\9.7\Development-Tooling\uniface-version-control\build\MetaTools.uar
+.\ext\VersionControl.uar
+.\ext\MetaTools.uar
+
 ;Version Control Sync Tool Default Configuration - please modify and include in your .asn
 [LOGICALS]
 ;The root folder to export source files to (relative to working directory)

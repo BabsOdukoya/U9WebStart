@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-09T11:44:41.00</DAT>
-<DAT name="UCOMPSTAMP">2017-03-09T11:44:43.00</DAT>
+<DAT name="UTIMESTAMP">2017-06-07T14:37:43.00</DAT>
+<DAT name="UCOMPSTAMP">2017-06-12T10:18:49.00</DAT>
 <DAT name="ULABEL">BOOTLOGIN</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Bootstrap Login Sample</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -380,14 +380,18 @@ endvariables
 #ENDIF
 
 end ; lpLoadLogin
+
+#include APP:LPGETDSP
 </DAT>
 <DAT name="FORMPIC" xml:space='preserve'>
- &uFRM;TYP=E&uSEP;NAM=FORM.UI&uSEP;WID=25&uSEP;HEI=7&uSEP;HOC=25&uSEP;VOC=7&uFRM;
+ &uFRM;TYP=E&uSEP;NAM=FORM.UI&uSEP;WID=25&uSEP;HEI=9&uSEP;HOC=25&uSEP;VOC=9&uFRM;
   &uFRM;TYP=F&uSEP;NAM=ALERT&uSEP;WID=20&uSEP;HEI=1&uFRM;
   &uFRM;TYP=F&uSEP;NAM=EMAIL&uSEP;WID=20&uSEP;HEI=1&uFRM;
   &uFRM;TYP=F&uSEP;NAM=PASSWORD&uSEP;WID=20&uSEP;HEI=1&uFRM;
   &uFRM;TYP=F&uSEP;NAM=REMEMBER&uSEP;WID=20&uSEP;HEI=1&uFRM;
-  &uFRM;TYP=F&uSEP;NAM=SIGN_IN&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
+  &uFRM;TYP=F&uSEP;NAM=SIGN_IN&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=REGISTER_AREA&uSEP;WID=20&uSEP;HEI=1&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=REGISTER&uSEP;WID=20&uSEP;HEI=1&uFRM;</DAT>
 <DAT name="TITLE" xml:space='preserve'>Bootstrap 3 Starter</DAT>
 <DAT name="SFUNC" xml:space='preserve'>#include U:zProcError  ; Report an unexpected failure in a proc statement.
 
@@ -410,16 +414,20 @@ end ; lpLoadLogin
 ;----------------------------------------------------------------
 weboperation createJS
 javascript
+	var thisInstance = this;
 
+	// Show register link on devices (phones, tablets etc.)
+	if (app.ui.getPlatform() !== 'browser') {
+		this.getEntity("FORM.UI").getOccurrence(0).getField("REGISTER_AREA").setProperty("style:display", "inherit");
+	}
+
+	// Add default behaviour for enter key (via submit handler)
 	var form = document.getElementById("uocc:FORM.UI:&lt;$componentName&gt;.1");
 	if (form.attachEvent) {
 		form.attachEvent("onsubmit", processForm);
 	} else {
 		form.addEventListener("submit", processForm);
 	}
-
-	var thisInstance = this;
-
 	function processForm(e) {
 		if (e.preventDefault){
 			e.preventDefault();
@@ -474,7 +482,7 @@ endvariables
 		return 0		
 	endif
 
-	; Save e-mail address in a cookie if REMEMBER checked
+	; Save e-mail address if REMEMBER checked
 	call lpSaveLogin()
 
 	;Remove the login DSP and show the main application page
@@ -816,6 +824,10 @@ return (0)
       &lt;/div&gt;
       &lt;button id="ufld:SIGN_IN.FORM.UI" type="submit" class="btn btn-lg btn-primary btn-block"&gt;Sign in&lt;/button&gt;
 
+	  &lt;div id="ufld:REGISTER_AREA.FORM.UI"&gt;
+	    &lt;hr&gt;
+        &lt;p class="text-info"&gt;Don't have an account?&amp;nbsp;&lt;span id="ufld:REGISTER.FORM.UI"&gt;Register here&lt;/span&gt;&lt;/p&gt;
+      &lt;/div&gt;
     &lt;/form&gt;
 
   &lt;/div&gt;&lt;!-- /.container --&gt;
@@ -1162,6 +1174,50 @@ return (0)
 <DAT name="UISOBJID">F</DAT>
 <DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
 <DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-06-06T11:18:30.00</DAT>
+<DAT name="ULABEL">REGISTER</DAT>
+<DAT name="GRP">FORM</DAT>
+<DAT name="UBASE">UI</DAT>
+<DAT name="UFORM">BOOTLOGIN</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">VC*</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="DETAIL" xml:space='preserve'>trigger
+public web
+scope
+	input
+	output
+	operation &lt;MAIN_DSP&gt;.showRegister
+endscope
+
+	activate "&lt;MAIN_DSP&gt;".showRegister()
+
+end ; showRegister
+</DAT>
+<DAT name="INITVALUE" xml:space='preserve'>Register here</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">FLATBUTTON</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-05-09T11:12:56.00</DAT>
+<DAT name="ULABEL">REGISTER_AREA</DAT>
+<DAT name="GRP">FORM</DAT>
+<DAT name="UBASE">UI</DAT>
+<DAT name="UFORM">BOOTLOGIN</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">C1</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">ATTRIBUTESONLY</DAT>
+<DAT name="WEBWIDGETCREATE">style:display=none</DAT>
 </OCC>
 <OCC>
 <DAT name="UTIMESTAMP">2017-02-14T14:14:04.00</DAT>

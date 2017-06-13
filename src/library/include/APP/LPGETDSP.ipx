@@ -51,7 +51,7 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-06T14:41:25.00</DAT>
+<DAT name="UTIMESTAMP">2017-05-12T13:02:48.00</DAT>
 <DAT name="USUB">I</DAT>
 <DAT name="UVAR">APP</DAT>
 <DAT name="ULABEL">LPGETDSP</DAT>
@@ -72,15 +72,16 @@ returns String
 params
 	String pComponentName : IN
 	String pInstanceName  : IN
-	String pOptions       : IN
+	Struct pOptions       : IN
 	Handle pHandle        : OUT
 endparams
 
 variables
+	String vOptionsJson
 	String vInstanceName
 endvariables
 
-	;structToJson vOptionsJson, pOptions
+	structToJson vOptionsJson, pOptions
 
 	;If pInstanceName is blank then default it to be the same as pComponentName
 	if (pInstanceName == "")
@@ -90,12 +91,8 @@ endvariables
 	endif
 	newinstance pComponentName, vInstanceName
 
-	; If parameters supplied, call create method
-	if (pOptions)
-		pHandle = $instancehandle(vInstanceName)
-		;$status = pHandle-&gt;appCreate(vOptionsJson)
-		$status = pHandle-&gt;create(pOptions)
-	endif
+	pHandle = $instancehandle(vInstanceName)
+	$status = pHandle-&gt;appCreate(vOptionsJson)
 
 	return vInstanceName
 

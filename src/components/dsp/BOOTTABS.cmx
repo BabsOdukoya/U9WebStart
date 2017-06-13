@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-03T13:14:08.00</DAT>
-<DAT name="UCOMPSTAMP">2017-03-03T13:14:08.00</DAT>
+<DAT name="UTIMESTAMP">2017-06-13T15:57:48.00</DAT>
+<DAT name="UCOMPSTAMP">2017-06-13T16:57:49.00</DAT>
 <DAT name="ULABEL">BOOTTABS</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Bootstrap Tabs Sample</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -205,8 +205,12 @@
 </DAT>
 <DAT name="INIT" xml:space='preserve'>public web
 TAB_01.DUMMY = "BOOTPAGE"
-TAB_03.DUMMY = "SAMPLE_MODAL"
-return 0</DAT>
+TAB_02.DUMMY = "SAMPLE_MODAL"
+TAB_03.DUMMY = "GEOLOCATION"
+
+webactivate $instancename.setupJS()
+return 0
+</DAT>
 <DAT name="CLEAR">clear</DAT>
 <DAT name="RETRIEVE" xml:space='preserve'>retrieve
 if ($status &lt; 0)
@@ -350,6 +354,22 @@ endif
 ;activate "IT_INDSP".in_store()
 ;end
 ;
+
+;-----------------------------------------------------------------------------
+; Add tab selected javascript hook
+;-----------------------------------------------------------------------------
+weboperation setupJS
+javascript
+// Add event handler for tab change
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+  var target = $(e.target).attr("href") // activated tab
+  if (target === '#tab03') {
+	lmap.map.invalidateSize();
+  }
+});
+endjavascript
+end ; setupJS
+
 #include APP:DSPOPERATIONS
 </DAT>
 <DAT name="HTMLPROP">EDITOR=TEXT</DAT>
@@ -365,12 +385,14 @@ endif
   &lt;/head&gt;
 
   &lt;body&gt;
-  &lt;div class="container"&gt;
+  &lt;div&gt;&lt;!-- class="container" --&gt;
     &lt;div class="bs-example bs-example-tabs"&gt;
       &lt;ul id="myTab" class="nav nav-tabs"&gt;
         &lt;li class="active"&gt;&lt;a href="#home" data-toggle="tab"&gt;Home&lt;/a&gt;&lt;/li&gt;
         &lt;li&gt;&lt;a href="#tab01" data-toggle="tab"&gt;Basic Page&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href="#tab03" data-toggle="tab"&gt;Modal&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#tab02" data-toggle="tab"&gt;Modal&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#tab03" data-toggle="tab"&gt;Location&lt;/a&gt;&lt;/li&gt;
+		&lt;!--
         &lt;li class="dropdown"&gt;
           &lt;a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown"&gt;Dropdown &lt;b class="caret"&gt;&lt;/b&gt;&lt;/a&gt;
           &lt;ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1"&gt;
@@ -378,6 +400,7 @@ endif
             &lt;li&gt;&lt;a href="#dropdown2" tabindex="-1" data-toggle="tab"&gt;@mdo&lt;/a&gt;&lt;/li&gt;
           &lt;/ul&gt;
         &lt;/li&gt;
+		--&gt;
       &lt;/ul&gt;
       &lt;div id="myTabContent" class="tab-content"&gt;
         &lt;div class="tab-pane fade in active" id="home"&gt;
@@ -393,6 +416,13 @@ endif
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
+        &lt;div class="tab-pane fade" id="tab02"&gt;
+          &lt;div class="tab-content" id="uent:DUMMY.DUMMY"&gt;
+            &lt;div id="uocc:DUMMY.DUMMY"&gt;
+              &lt;div id="ufld:TAB_02.DUMMY.DUMMY"&gt;&lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
         &lt;div class="tab-pane fade" id="tab03"&gt;
           &lt;div class="tab-content" id="uent:DUMMY.DUMMY"&gt;
             &lt;div id="uocc:DUMMY.DUMMY"&gt;
@@ -400,18 +430,7 @@ endif
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
-        &lt;div class="tab-pane fade" id="tab02"&gt;
-          &lt;div id="uent:DUMMY.DUMMY"&gt;
-            &lt;div id="uocc:DUMMY.DUMMY"&gt;
-              &lt;div class="col-xs-7 col-sm-6 placeholder"&gt;
-                &lt;div id="ufld:TAB_02_01.DUMMY.DUMMY"&gt;&lt;/div&gt;
-              &lt;/div&gt;
-              &lt;div class="col-xs-5 col-sm-6 placeholder"&gt;
-                &lt;div id="ufld:TAB_02_02.DUMMY.DUMMY"&gt;&lt;/div&gt;
-              &lt;/div&gt;
-            &lt;/div&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
+		&lt;!--
         &lt;div class="tab-pane fade" id="dropdown1"&gt;
           &lt;p&gt;Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of t
 &uBS;hem, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.&lt;/p&gt;
@@ -420,6 +439,7 @@ endif
           &lt;p&gt;Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf cliche high life echo park Austin. Cred vinyl keffiyeh DIY salvia PBR, banh mi before they sold out farm-to-table VHS viral locavore cosby sweater. Lomo wolf viral, mustache readymade thundercats keffiyeh craft beer marfa ethical. Wolf salvia freegan, sartorial keffiyeh echo par
 &uBS;k vegan.&lt;/p&gt;
         &lt;/div&gt;
+		--&gt;
       &lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;

@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-09T11:31:18.00</DAT>
-<DAT name="UCOMPSTAMP">2017-03-09T11:32:21.00</DAT>
+<DAT name="UTIMESTAMP">2017-06-13T16:01:30.00</DAT>
+<DAT name="UCOMPSTAMP">2017-06-13T17:02:02.00</DAT>
 <DAT name="ULABEL">SAMPLE_MODAL</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Bootstrap Modal example</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -204,6 +204,7 @@
 #Comment ----------------------------------------------
 </DAT>
 <DAT name="INIT" xml:space='preserve'>public web
+USERNAME.COUNTRY = lpGetUserName()
 return 0
 </DAT>
 <DAT name="CLEAR">clear</DAT>
@@ -369,28 +370,28 @@ end ;selectCallback
     &lt;br&gt;
     &lt;form class="form-horizontal" role="form"&gt;
       &lt;div class="form-group"&gt;
-        &lt;label id="ulbl:USERNAME.COUNTRY.DUMMY" class="col-xs-2 control-label"&gt;&lt;/label&gt;
-        &lt;div class="col-xs-6"&gt;
+        &lt;label id="ulbl:USERNAME.COUNTRY.DUMMY" class="col-xs-3 col-sm-2 control-label"&gt;&lt;/label&gt;
+        &lt;div class="col-xs-7 col-sm-8"&gt;
           &lt;input type="text" id="ufld:USERNAME.COUNTRY.DUMMY" value="Editbox" class="form-control"/&gt;
 		&lt;/div&gt;
-		&lt;div class="col-xs-4"&gt;
-            &lt;input type="button" id="ufld:MORE.BUTTONS.DUMMY" value="More" class="btn btn-info"/&gt;
+		&lt;div class="col-xs-1 col-sm-2"&gt;
+            &lt;input type="button" id="ufld:MORE.BUTTONS.DUMMY" value="More" class="btn btn-info" title="More"/&gt;
             &lt;!-- &lt;p class="help-block"&gt;More information overlay&lt;/p&gt; --&gt;
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;div class="form-group"&gt;
-        &lt;label id="ulbl:COUNTRY.COUNTRY.DUMMY" class="col-xs-2 control-label"&gt;&lt;/label&gt;
-        &lt;div class="col-xs-6"&gt;
+        &lt;label id="ulbl:COUNTRY.COUNTRY.DUMMY" class="col-xs-3 col-sm-2 control-label"&gt;&lt;/label&gt;
+        &lt;div class="col-xs-7 col-sm-8"&gt;
           &lt;input type="text" id="ufld:COUNTRY.COUNTRY.DUMMY" value="Editbox" class="form-control"/&gt;
 		&lt;/div&gt;
-        &lt;div class="col-xs-4"&gt;
-          &lt;input type="button" id="ufld:SELECT.BUTTONS.DUMMY" value="Select" class="btn btn-info"/&gt;
+        &lt;div class="col-xs-1 col-sm-2"&gt;
+          &lt;input type="button" id="ufld:SELECT.BUTTONS.DUMMY" value="Select" class="btn btn-info fa" title="Select"/&gt;
           &lt;!-- &lt;p class="help-block"&gt;Select from list&lt;/p&gt; --&gt;
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;div class="form-group" id="uent:BUTTONS.DUMMY"&gt;
-        &lt;div class="col-xs-offset-2 col-xs-10"&gt;
-          &lt;input type="button" id="ufld:CONFIRM.BUTTONS.DUMMY" value="Confirm" class="btn btn-info"/&gt;
+        &lt;div class="col-xs-offset-3 col-xs-8 col-sm-offset-2 col-sm-10"&gt;
+          &lt;input type="button" id="ufld:CONFIRM.BUTTONS.DUMMY" value="Confirm" class="btn btn-info fa"/&gt;
           &lt;!-- &lt;p class="help-block"&gt;Click to show modal confirmation dialog&lt;/p&gt; --&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -701,7 +702,7 @@ end ;selectCallback
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\E6,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-03T11:55:50.00</DAT>
+<DAT name="UTIMESTAMP">2017-05-26T10:12:47.00</DAT>
 <DAT name="ULABEL">CONFIRM</DAT>
 <DAT name="GRP">BUTTONS</DAT>
 <DAT name="UBASE">DUMMY</DAT>
@@ -743,6 +744,8 @@ webactivate "&lt;MODAL_DSP&gt;".jsShow(   %\
   "confirmCallback")
 
 return 0</DAT>
+<DAT name="UFORMAT" xml:space='preserve'>$format = $concat($string("&lt;B_CHECK_ICON&gt;; "), "Confirm")
+</DAT>
 <DAT name="INITVALUE">Confirm</DAT>
 <DAT name="UISOBJID">F</DAT>
 <DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
@@ -779,7 +782,7 @@ return 0</DAT>
 <DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
 </OCC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-09T11:31:18.00</DAT>
+<DAT name="UTIMESTAMP">2017-05-26T15:50:21.00</DAT>
 <DAT name="ULABEL">MORE</DAT>
 <DAT name="GRP">BUTTONS</DAT>
 <DAT name="UBASE">DUMMY</DAT>
@@ -795,18 +798,19 @@ scope
 	input
 	output
 	operation &lt;MODAL_DSP&gt;.show
+	operation SAMPLE_MORE.appSetup
 endscope
 
 variables
 	String vMessage
-	String vParams
+	Struct vStruct
 	String vInstanceName
 endvariables
 
-vParams = $concat("USERNAME=", USERNAME.COUNTRY)
+vStruct-&gt;param = USERNAME.COUNTRY
 
 ; Pre-activate components to reduce HTTP GET requests
-vInstanceName = lpGetDSP("SAMPLE_MORE", "", vParams, "")
+vInstanceName = lpGetDSP("SAMPLE_MORE", "", vStruct, "")
 
 activate "&lt;MODAL_DSP&gt;".show( %\
   "More Information",        %\
@@ -824,13 +828,13 @@ return 0
 <DAT name="WEBWIDGETTYPE">COMMANDBUTTON</DAT>
 </OCC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-03-08T14:06:56.00</DAT>
+<DAT name="UTIMESTAMP">2017-05-25T16:21:52.00</DAT>
 <DAT name="ULABEL">SELECT</DAT>
 <DAT name="GRP">BUTTONS</DAT>
 <DAT name="UBASE">DUMMY</DAT>
 <DAT name="UFORM">SAMPLE_MODAL</DAT>
 <DAT name="U_DTYP">S</DAT>
-<DAT name="U_INDB">X</DAT>
+<DAT name="U_INDB">N</DAT>
 <DAT name="SYNTAXMOD">NED</DAT>
 <DAT name="INTERFACEMOD">C1</DAT>
 <DAT name="WIDGETTYPE">EDITBOX</DAT>
@@ -862,6 +866,9 @@ webactivate "&lt;MODAL_DSP&gt;".jsShow(   %\
   "selectCallback")
 
 return 0
+</DAT>
+<DAT name="UFORMAT" xml:space='preserve'>;$format = $concat($string("&lt;B_LIST_ICON&gt;; "), "Select")
+$format = $string("&lt;B_LIST_ICON&gt;; ")
 </DAT>
 <DAT name="INITVALUE">Select</DAT>
 <DAT name="UISOBJID">F</DAT>

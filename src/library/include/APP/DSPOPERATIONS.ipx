@@ -51,12 +51,17 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-02-28T10:35:18.00</DAT>
+<DAT name="UTIMESTAMP">2017-05-08T15:08:49.00</DAT>
 <DAT name="USUB">I</DAT>
 <DAT name="UVAR">APP</DAT>
 <DAT name="ULABEL">DSPOPERATIONS</DAT>
 <DAT name="ULAN">P</DAT>
 <DAT name="UDESCR" xml:space='preserve'>DSP Operations</DAT>
+<DAT name="UTEXT" xml:space='preserve'>#include App:appCreate
+#include App:appCreateJs
+#include App:appRefresh
+#include App:appSetup
+#include App:appSetupJs</DAT>
 </OCC>
 </TABLE>
 </UNIFACE>

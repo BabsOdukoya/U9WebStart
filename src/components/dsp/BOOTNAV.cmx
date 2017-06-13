@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-04-07T12:20:40.00</DAT>
-<DAT name="UCOMPSTAMP">2017-04-07T13:20:40.00</DAT>
+<DAT name="UTIMESTAMP">2017-06-13T15:20:46.00</DAT>
+<DAT name="UCOMPSTAMP">2017-06-13T16:34:58.00</DAT>
 <DAT name="ULABEL">BOOTNAV</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Bootstrap Starter Main</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -210,7 +210,7 @@ variables
 endvariables
 
 call lpBuildNav		; Create Navigation Links
-call lpBuildBreadcrumb	; Create Breadcrumb Links
+;call lpBuildBreadcrumb	; Create Breadcrumb Links
 
 ; Extract name from e-mail address
 vStatus = $split(lpGetUserName(), 1, "@", vUser)
@@ -219,7 +219,7 @@ vStatus = $split(vUser,           1, ".", USERNAME.STATUS)
 ; See Defines trigger for definitions below
 CONTAINER.FORM  = "&lt;HOME_DSP&gt;"
 ALERT.FORM      = "&lt;ALERT_DSP&gt;"
-activate $instancename.setupJS()
+webactivate $instancename.setupJS()
 return (0)
 </DAT>
 <DAT name="CLEAR">clear</DAT>
@@ -272,7 +272,7 @@ entry lpBuildNav
 
 	clear/e "NAV.UI"
 
-	#for ITEM=(Home,About,Contact)
+	#for ITEM=(Home,Users,About)
 	creocc "NAV", -1
 	LI.NAV = "&lt;ITEM&gt;"
 	#endfor
@@ -282,38 +282,39 @@ entry lpBuildNav
 
 end ; lpBuildNav
 
-;-------------------------
-; Create Breadcrumb Links
-;-------------------------
-entry lpBuildBreadcrumb
-
-	$BREADCRUMB_CUR$ = 1
-	clear/e "BREADCRUMB.UI"
-
-	;#for ITEM=(Home,Page), COUNTER
-	#for ITEM=(Home), COUNTER
-	creocc "BREADCRUMB", -1
-	if ($BREADCRUMB_CUR$ = $curocc(BREADCRUMB))
-		TXT.BREADCRUMB = "&lt;ITEM&gt;"
-		LINK.BREADCRUMB = ""
-		;$fieldsyntax(LINK.BREADCRUMB) = "HID"
-	else
-		TXT.BREADCRUMB = ""
-		;$fieldsyntax(TXT.BREADCRUMB) = "HID"
-		LINK.BREADCRUMB = "&lt;ITEM&gt;"
-	endif
-	#endfor
-
-	setocc "BREADCRUMB.UI",1
-
-end ; lpBuildBreadcrumb
-</DAT>
+;;-------------------------
+;; Create Breadcrumb Links
+;;-------------------------
+;entry lpBuildBreadcrumb
+;
+;	$BREADCRUMB_CUR$ = 1
+;	clear/e "BREADCRUMB.UI"
+;
+;	;#for ITEM=(Home,Page), COUNTER
+;	#for ITEM=(Home), COUNTER
+;	creocc "BREADCRUMB", -1
+;	if ($BREADCRUMB_CUR$ = $curocc(BREADCRUMB))
+;		TXT.BREADCRUMB = "&lt;ITEM&gt;"
+;		LINK.BREADCRUMB = ""
+;		;$fieldsyntax(LINK.BREADCRUMB) = "HID"
+;	else
+;		TXT.BREADCRUMB = ""
+;		;$fieldsyntax(TXT.BREADCRUMB) = "HID"
+;		LINK.BREADCRUMB = "&lt;ITEM&gt;"
+;	endif
+;	#endfor
+;
+;	setocc "BREADCRUMB.UI",1
+;
+;end ; lpBuildBreadcrumb
+;</DAT>
 <DAT name="FORMPIC" xml:space='preserve'>
  &uFRM;TYP=E&uSEP;NAM=NAV.UI&uSEP;WID=25&uSEP;HEI=3&uSEP;HOC=25&uSEP;VOC=3&uFRM;
   &uFRM;TYP=F&uSEP;NAM=LI&uSEP;WID=20&uSEP;HEI=1&uFRM;
 
 
- &uFRM;TYP=E&uSEP;NAM=STATUS.UI&uSEP;WID=25&uSEP;HEI=4&uSEP;HOC=25&uSEP;VOC=4&uFRM;
+ &uFRM;TYP=E&uSEP;NAM=STATUS.UI&uSEP;WID=25&uSEP;HEI=5&uSEP;HOC=25&uSEP;VOC=5&uFRM;
+  &uFRM;TYP=F&uSEP;NAM=USERS&uSEP;WID=20&uSEP;HEI=1&uFRM;
   &uFRM;TYP=F&uSEP;NAM=USERNAME&uSEP;WID=20&uSEP;HEI=1&uFRM;
   &uFRM;TYP=F&uSEP;NAM=LOGOUT&uSEP;WID=20&uSEP;HEI=1&uFRM;
 
@@ -330,12 +331,14 @@ end ; lpBuildBreadcrumb
 <DAT name="SFUNC" xml:space='preserve'>#include U:zProcError  ; Report an unexpected failure in a proc statement.
 
 ;--------------------------------------------------------------------------------
-;	Javascript initiation logic (make first nav links active)
+;	Javascript initiation logic (make first nav links active &amp; save instance)
 ;--------------------------------------------------------------------------------
 weboperation setupJS
 javascript
   	$('#navbar li:first').addClass('active');
   	$('#breadcrumb li:first').addClass('active');
+    app.menuInstance = this;
+
 endjavascript
 end ; setupJS
 
@@ -362,6 +365,12 @@ selectcase pItem
       "",                                     %\
       "")
 
+  case "Users"
+
+	CONTAINER.FORM = "APP_USERS"
+	; Explicitly activate appCreate as we're not doing it via JavaScript
+    webactivate "APP_USERS".appCreate("")
+
   elsecase
 	activate "&lt;ALERT_DSP&gt;".showInfo("Info:", $concat(pItem, " page under construction"))
 
@@ -369,7 +378,32 @@ endselectcase
 return 0
 
 end ; navClick
-</DAT>
+
+
+operation show
+partner web
+params
+	string pInstanceName : In
+endparams
+
+	CONTAINER.FORM = pInstanceName
+
+end ; Show
+
+;;--------------------------------------------------------------------------------
+;;	Load new page on nav click
+;;--------------------------------------------------------------------------------
+;operation postDspSetup
+;params
+;	string pResourceName : IN
+;	string pAction       : IN
+;	string pParam        : IN
+;endparams
+;public web
+;
+;	return 0
+;
+;end ; postDSPSetup</DAT>
 <DAT name="HTMLPROP">EDITOR=TEXT</DAT>
 <DAT name="USCONTAINED">1</DAT>
 <DAT name="GETSTATE" xml:space='preserve'>variables
@@ -578,6 +612,8 @@ return (0)
 #define  byStateManagerComponent = 2
 
 #include APP:DSPDEFINES
+
+
 </DAT>
 <DAT name="USTATEMANAGEDBY">0</DAT>
 <DAT name="HTMLSKELETON" xml:space='preserve'>&lt;!DOCTYPE html&gt;
@@ -595,7 +631,7 @@ return (0)
 &lt;body class="bootstrap" onload="uLoad(this);"&gt;
 
   &lt;nav class="navbar navbar-inverse navbar-fixed-top"&gt;
-    &lt;div class="container"&gt;
+    &lt;div class=""&gt;&lt;!-- Removed container class to reduce extraneous white space --&gt;
       &lt;div class="navbar-header"&gt;
         &lt;button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"&gt;
           &lt;span class="sr-only"&gt;Toggle navigation&lt;/span&gt;
@@ -619,7 +655,7 @@ return (0)
         &lt;div id="uent:NAV.UI"&gt;
           &lt;ul id="uocc:NAV.UI" class="nav navbar-nav"&gt;
             &lt;li&gt;
-              &lt;a id="ufld:LI.NAV.UI"&gt;Hyperlink&lt;/a&gt;
+              &lt;a id="ufld:LI.NAV.UI" data-toggle="collapse" data-target=".navbar-collapse"&gt;Hyperlink&lt;/a&gt;
             &lt;/li&gt;
           &lt;/ul&gt;
 
@@ -627,8 +663,8 @@ return (0)
 
             &lt;li class="dropdown"&gt;
               &lt;a class="dropdown-toggle" data-toggle="dropdown" href="#"&gt;
-                &lt;span id="ufld:USERNAME.STATUS.UI"&gt;&lt;/span&gt;
                 &lt;i class="fa fa-user fa-fw"&gt;&lt;/i&gt;
+                &lt;span id="ufld:USERNAME.STATUS.UI"&gt;&lt;/span&gt;
                 &lt;i class="fa fa-caret-down"&gt;&lt;/i&gt;
               &lt;/a&gt;
               &lt;ul class="dropdown-menu dropdown-user"&gt;
@@ -639,6 +675,11 @@ return (0)
     				  User Profile
                   &lt;/a&gt;
                 &lt;/li&gt;
+                &lt;!--
+                &lt;li id="ufld:USERS.STATUS.UI"&gt;
+    			  &lt;a href="#" data-toggle="collapse" data-target=".navbar-collapse"&gt;&lt;i class="fa fa-users fa-fw"&gt;&lt;/i&gt; Manage Users&lt;/a&gt;
+                &lt;/li&gt;
+                --&gt;
                 &lt;li&gt;
     			  &lt;a href="#"&gt;&lt;i class="fa fa-gear fa-fw"&gt;&lt;/i&gt; Settings&lt;/a&gt;
                 &lt;/li&gt;
@@ -660,7 +701,7 @@ return (0)
     &lt;/div&gt;&lt;!--/.container --&gt;
   &lt;/nav&gt;
 
-  &lt;div class="container"&gt;
+  &lt;div&gt;&lt;!-- Removed container class to reduce extraneous white space --&gt;
 
     &lt;div class="row"&gt;
       &lt;!--
@@ -672,7 +713,6 @@ return (0)
         &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
         &lt;li&gt;&lt;a href="#"&gt;Basic Page&lt;/a&gt;&lt;/li&gt;
       &lt;/ul&gt;
-      --&gt;
 
       &lt;ul id="breadcrumb" class="breadcrumb pull-right" style="margin-bottom: 0px !important;"&gt;
         &lt;li id="uocc:BREADCRUMB.UI"&gt;
@@ -680,10 +720,11 @@ return (0)
           &lt;span id="ufld:TXT.BREADCRUMB.UI"&gt;&lt;/span&gt;
         &lt;/li&gt;
       &lt;/ul&gt;
-
+      --&gt;
+	  &lt;br&gt;
     &lt;/div&gt;
 
-	&lt;div class="container"&gt;
+	&lt;div&gt;&lt;!-- class="container" --&gt;
 	  &lt;div id="ufld:ALERT.FORM.UI"&gt;DspContainer&lt;/div&gt;
 	  &lt;div id="ufld:CONTAINER.FORM.UI"&gt;DspContainer&lt;/div&gt;
      &lt;/div&gt;
@@ -1028,6 +1069,20 @@ return (0)
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\E6,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
+<DAT name="UTIMESTAMP">2017-05-03T16:35:13.00</DAT>
+<DAT name="ULABEL">ACCOUNT</DAT>
+<DAT name="GRP">STATUS</DAT>
+<DAT name="UBASE">UI</DAT>
+<DAT name="UFORM">BOOTNAV</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="WEBWIDGETTYPE">EDITBOX</DAT>
+</OCC>
+<OCC>
 <DAT name="UTIMESTAMP">2017-02-17T10:25:59.00</DAT>
 <DAT name="ULABEL">ALERT</DAT>
 <DAT name="GRP">FORM</DAT>
@@ -1167,6 +1222,31 @@ end ;onClick
 <DAT name="UISOBJID">F</DAT>
 <DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
 <DAT name="WEBWIDGETTYPE">STATICTEXT</DAT>
+</OCC>
+<OCC>
+<DAT name="UTIMESTAMP">2017-05-03T16:44:16.00</DAT>
+<DAT name="ULABEL">USERS</DAT>
+<DAT name="GRP">STATUS</DAT>
+<DAT name="UBASE">UI</DAT>
+<DAT name="UFORM">BOOTNAV</DAT>
+<DAT name="U_DTYP">S</DAT>
+<DAT name="U_INDB">N</DAT>
+<DAT name="INTERFACEMOD">C1</DAT>
+<DAT name="WIDGETTYPE">EDITBOX</DAT>
+<DAT name="UINHERIT">F</DAT>
+<DAT name="UISOBJID">F</DAT>
+<DAT name="HTML_CTRLTYPE">U_INPUT</DAT>
+<DAT name="UFTRIGGERS" xml:space='preserve'>;---------------------------------------------------
+trigger onClick
+;---------------------------------------------------
+public web
+
+	activate $instancename.navClick("Users")
+	return 0
+
+end ;onClick
+</DAT>
+<DAT name="WEBWIDGETTYPE">ATTRIBUTESONLY</DAT>
 </OCC>
 </TABLE>
 <TABLE>
