@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-06-13T15:49:59.00</DAT>
-<DAT name="UCOMPSTAMP">2017-06-13T16:00:40.00</DAT>
+<DAT name="UTIMESTAMP">2017-06-15T11:36:08.00</DAT>
+<DAT name="UCOMPSTAMP">2017-06-15T12:36:09.00</DAT>
 <DAT name="ULABEL">BOOTUSER</DAT>
 <DAT name="UDESCR" xml:space='preserve'>User Detail</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -900,7 +900,7 @@ $format = $string("&lt;B_DELETE_ICON&gt;;")</DAT>
 <DAT name="WEBWIDGETTYPE">PICTURE_UPDATABLE</DAT>
 </OCC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-06-07T14:47:28.00</DAT>
+<DAT name="UTIMESTAMP">2017-06-15T11:36:08.00</DAT>
 <DAT name="ULABEL">IMPORT_CONTACT</DAT>
 <DAT name="GRP">BUTTONS</DAT>
 <DAT name="UBASE">DUMMY</DAT>
@@ -940,12 +940,18 @@ javascript
 		//	vOcc = vEnt.createOccurrence(-1);
 		//}
 
+		// Populate the fields
+		if (vOcc.getField("USERNAME").getValue().length == 0) {
+			var vEmail = getFirstProperty(contact.emails);
+			if (vEmail.length &gt; 0) {
+				setFieldValue(vEmail, "USERNAME", vOcc);
+			}
+		}
+
 		var vDisplayName = getName(contact);
-		var vEmail = getFirstProperty(contact.emails);
-		var vPhoneNumber = getFirstProperty(contact.phoneNumbers);
-		// Populate the fields 
-		setFieldValue(vEmail, "USERNAME", vOcc);
 		setFieldValue(vDisplayName, "NAME", vOcc);
+
+		var vPhoneNumber = getFirstProperty(contact.phoneNumbers);
 		setFieldValue(vPhoneNumber, "TELEPHONE", vOcc);
 	}
 
