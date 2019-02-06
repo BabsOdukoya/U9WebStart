@@ -35,5 +35,8 @@ $server_secret = hCRivhboXoFHjdfZevndGlbpnXScWKame2dFfBnkIJesFAA7tCUntLCrtILMqgZ
 
 ; The following assignment setting is used to specify the location of base URL for JavaScript and CSS resources for DSPs
 $uniface_runtime_base_url = ../common
+;$uniface_runtime_base_url = http://localhost:9700/webstart/common
 
 [LOGICALS]
+CSS_THEME=adminlte2
+;CSS_THEME=sbadmin2

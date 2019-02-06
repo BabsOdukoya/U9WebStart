@@ -167,8 +167,8 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\F1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-05-12T15:39:10.00</DAT>
-<DAT name="UCOMPSTAMP">2017-06-12T10:18:50.00</DAT>
+<DAT name="UTIMESTAMP">2017-08-02T13:53:02.00</DAT>
+<DAT name="UCOMPSTAMP">2017-08-02T14:53:40.00</DAT>
 <DAT name="ULABEL">BOOTMAIN</DAT>
 <DAT name="UDESCR" xml:space='preserve'>Bootstrap Starter Main</DAT>
 <DAT name="WVPOS">3</DAT>
@@ -203,7 +203,8 @@
 
 #Comment ----------------------------------------------
 </DAT>
-<DAT name="INIT" xml:space='preserve'>public web
+<DAT name="INIT" xml:space='preserve'>; Note layout is in extenal file in hts folder
+public web
 variables
 	string vSessionAttributes
 	string vUserName
@@ -268,6 +269,7 @@ else
 endif
 </DAT>
 <DAT name="GENERAL" xml:space='preserve'>#include APP:DSPLOCALPROCS
+
 </DAT>
 <DAT name="FORMPIC" xml:space='preserve'>
  &uFRM;TYP=E&uSEP;NAM=FORM.UI&uSEP;WID=25&uSEP;HEI=4&uSEP;HOC=25&uSEP;VOC=4&uFRM;
@@ -311,13 +313,24 @@ scope
 	output
 	operation &lt;ALERT_DSP&gt;.clearMessage
 endscope
+variables
+	string vCssTheme
+	string vNavComponent
+endvariables
 
 	activate "&lt;ALERT_DSP&gt;".clearMessage()
 	; Load Navigation component into DSP container
 	; The navigation component will load display forms in it's own container
 
 	;CONTAINER.FORM = "&lt;NAV_DSP&gt;"
-	CONTAINER.FORM = lpGetDsp("&lt;NAV_DSP&gt;", "", "", "")
+	vCssTheme = $uppercase($logical("CSS_THEME"))
+	if (vCssTheme)
+		vNavComponent = $concat("NAV", vCssTheme)
+		CONTAINER.FORM = lpGetDsp(vNavComponent, "", "", "")
+		webactivate $instancename.setNav(vNavComponent)
+	else
+		CONTAINER.FORM = lpGetDsp("&lt;NAV_DSP&gt;", "", "", "")
+	endif
 	return 0
 
 end ;showApplication
@@ -372,8 +385,20 @@ endparams
 	endif
 
 end ; getText
+
+
+;---------------------------------------------------------
+; Notify app.js JavaScript of menuPage change
+;---------------------------------------------------------
+weboperation setNav
+params
+	string pMenuPage : IN
+endparams
+javascript
+	&lt;JS_NAMESPACE&gt;.menuPage = pMenupage;
+endjavascript
+end ; setNav
 </DAT>
-<DAT name="HTMLPROP">EDITOR=TEXT</DAT>
 <DAT name="USCONTAINED">1</DAT>
 <DAT name="GETSTATE" xml:space='preserve'>variables
   string  WebServerContext, Cookie, Session, UserContext, sOuter
@@ -501,77 +526,78 @@ htmlmessage:blockdata ~
 
 end
 </DAT>
-<DAT name="SETSTATE" xml:space='preserve'>variables
-  string WebServerCntxt, SessionId, Varlist
-endvariables
-
-; =======================================================================================
-; Generate response
-; ----------------------------------------------
-selectcase $webresponsetype
-case "UPDATE"         ; Update page
-  websave               ; Generate data
-  if ($procerror &lt; 0)
-    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
-    return (0)
-  endif
-case "FULLPAGE"       ; Initial page
-  weblayout             ; Generate layout
-  if ($procerror &lt; 0)
-    webmessage/error "weblayout failed (Set State)%%^$procerror = %%$procerror%%%"
-    return ($status)
-  endif
-
-  webdefinitions        ; Generate component definitions
-  if ($procerror &lt; 0)
-    webmessage/error "webdefinitions failed (Set State)%%^$procerror = %%$procerror%%%"
-    return ($status)
-  endif
-
-  websave               ; Generate data
-  if ($procerror &lt; 0)
-    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
-    return (0)
-  endif
-endselectcase
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Set state
-; ----------------------------------------------
-; The constants noState, byCookie and byStateManagerComponent are assumed
-; to be defined in the Component Defines Trigger.
-#if ("&lt;$cmpStateManagedBy&gt;" = "&lt;noState&gt;")
-  ; Insert your code...
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byCookie&gt;")
-  ; Initialize Varlist with all component variables.
-  Varlist = $componentinfo($instancename, "VARIABLES")
-  ; Add the current values of the component variables to Varlist.
-  putlistitems/id /component Varlist
-  ; Insert your code...
-  putitem/id $webinfo("COOKIESOUT"), "MY_VARLIST_COOKIE", Varlist
-#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byStateManagerComponent&gt;")
-  WebServerCntxt = $webinfo("WEBSERVERCONTEXT")
-  getitem/id SessionId, WebServerCntxt, "SESSION"
-  ; Initialize Varlist with all component variables.
-  Varlist = $componentinfo($instancename, "VARIABLES")
-  ; Add the current values of the component variables to Varlist.
-  putlistitems/id /component Varlist
-  ; Insert your code...
-  activate "USYSSTAT".SetState(SessionId, $instancename, Varlist)
-#endif
-; =======================================================================================
-
-
-
-; =======================================================================================
-; Execution ok
-; ----------------------------------------------
-return (0)
-; =======================================================================================
-</DAT>
+<DAT name="SETSTATE" xml:space='preserve'>#include APP:SETSTATE
+;variables
+;  string WebServerCntxt, SessionId, Varlist
+;endvariables
+;
+;; =======================================================================================
+;; Generate response
+;; ----------------------------------------------
+;selectcase $webresponsetype
+;case "UPDATE"         ; Update page
+;  websave               ; Generate data
+;  if ($procerror &lt; 0)
+;    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
+;    return (0)
+;;  endif
+;case "FULLPAGE"       ; Initial page
+;  weblayout             ; Generate layout
+;  if ($procerror &lt; 0)
+;    webmessage/error "weblayout failed (Set State)%%^$procerror = %%$procerror%%%"
+;    return ($status)
+;  endif
+;
+;  webdefinitions        ; Generate component definitions
+;  if ($procerror &lt; 0)
+;    webmessage/error "webdefinitions failed (Set State)%%^$procerror = %%$procerror%%%"
+;    return ($status)
+;  endif
+;
+;  websave               ; Generate data
+;  if ($procerror &lt; 0)
+;    webmessage/error "websave failed (Set State)%%^$procerror = %%$procerror%%%"
+;    return (0)
+;  endif
+;endselectcase
+;; =======================================================================================
+;
+;
+;
+;; =======================================================================================
+;; Set state
+;; ----------------------------------------------
+;; The constants noState, byCookie and byStateManagerComponent are assumed
+;; to be defined in the Component Defines Trigger.
+;#if ("&lt;$cmpStateManagedBy&gt;" = "&lt;noState&gt;")
+;  ; Insert your code...
+;#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byCookie&gt;")
+;  ; Initialize Varlist with all component variables.
+;  Varlist = $componentinfo($instancename, "VARIABLES")
+;  ; Add the current values of the component variables to Varlist.
+;  putlistitems/id /component Varlist
+;  ; Insert your code...
+;  putitem/id $webinfo("COOKIESOUT"), "MY_VARLIST_COOKIE", Varlist
+;#elsif ("&lt;$cmpStateManagedBy&gt;" = "&lt;byStateManagerComponent&gt;")
+;  WebServerCntxt = $webinfo("WEBSERVERCONTEXT")
+;  getitem/id SessionId, WebServerCntxt, "SESSION"
+;  ; Initialize Varlist with all component variables.
+;  Varlist = $componentinfo($instancename, "VARIABLES")
+;  ; Add the current values of the component variables to Varlist.
+;  putlistitems/id /component Varlist
+;  ; Insert your code...
+;  activate "USYSSTAT".SetState(SessionId, $instancename, Varlist)
+;#endif
+;; =======================================================================================
+;
+;
+;
+;; =======================================================================================
+;; Execution ok
+;; ----------------------------------------------
+;return (0)
+;; =======================================================================================
+;</DAT>
 <DAT name="TPLACTUAL2" xml:space='preserve'>#comment The pre-defined constant $cmpStateManagedBy represents the component property 'State Managed By'.
 #comment See GetState and SetState triggers for usage.
 #comment It has one of the following values:
@@ -581,37 +607,11 @@ return (0)
 #define  byStateManagerComponent = 2
 
 #include APP:DSPDEFINES
+
+#define LAYOUT_SOURCE   = DYNAMIC
+#define GET_LAYOUT_PROC = lpGetLayout
 </DAT>
 <DAT name="USTATEMANAGEDBY">0</DAT>
-<DAT name="HTMLSKELETON" xml:space='preserve'>&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="utf-8" /&gt;
-  &lt;meta http-equiv="X-UA-Compatible" content="IE=edge" /&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
-
-  &lt;!--link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"--&gt;
-
-  &lt;link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" /&gt;
-  &lt;link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" /&gt;
-  &lt;link href="../css/main.css" rel="stylesheet" /&gt;
-
-  &lt;script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"&gt;&lt;/script&gt;
-  &lt;script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"&gt;&lt;/script&gt;
-  &lt;script src="../js/main.js"&gt;&lt;/script&gt;
-  &lt;script src="../js/ui.js"&gt;&lt;/script&gt;
-  &lt;title&gt;Responsive Starter&lt;/title&gt;
-&lt;/head&gt;
-&lt;body class="bootstrap"&gt;
-
-  &lt;div class="container-fluid"&gt;
-	&lt;div id="ufld:CONTAINER.FORM.UI"&gt;DspContainer&lt;/div&gt;
-     &lt;div id="ufld:MODAL.FORM.UI"&gt;DspContainer&lt;/div&gt;
-  &lt;/div&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;
-</DAT>
 </OCC>
 </TABLE>
 <TABLE>

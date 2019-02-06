@@ -51,17 +51,18 @@
  pointer="0" inum="0" ufocc="0" varinfo=",1,0,2,\1F\C1,0,0,0,,0,0,0,," />
 </DSC>
 <OCC>
-<DAT name="UTIMESTAMP">2017-05-26T09:55:53.00</DAT>
+<DAT name="UTIMESTAMP">2017-08-02T14:09:52.00</DAT>
 <DAT name="USUB">I</DAT>
 <DAT name="UVAR">APP</DAT>
 <DAT name="ULABEL">DSPDEFINES</DAT>
 <DAT name="ULAN">P</DAT>
 <DAT name="UDESCR" xml:space='preserve'>DSP Definitions</DAT>
-<DAT name="UTEXT" xml:space='preserve'>#define MAIN_DSP  BOOTMAIN
+<DAT name="UTEXT" xml:space='preserve'>#define MAIN_DSP  MAIN
 #define ALERT_DSP BOOTALERT
 #define HOME_DSP  BOOTTABS
 #define MODAL_DSP BOOTMODAL
-#define NAV_DSP   BOOTNAV
+#define NAV_DSP   NAVTOP
+;#define NAV_DSP   NAVADMINLTE2
 #define JS_NAMESPACE app
 
 #include APP:ICONDEFINES
